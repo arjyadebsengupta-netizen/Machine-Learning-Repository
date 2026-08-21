@@ -10,9 +10,20 @@ Suppose we have measured two quantities for \(N\) physical systems:
 
 Here:
 
-- \(x_i\) is the input or explanatory variable.
-- \(y_i\) is the observed output.
-- \(N\) is the number of observations.
+- ```math
+  x_i
+  ```
+  is the input or explanatory variable.
+
+- ```math
+  y_i
+  ```
+  is the observed output.
+
+- ```math
+  N
+  ```
+  is the number of observations.
 
 For a physics example, imagine measuring the velocity of an object at different times. Under constant acceleration,
 
@@ -29,7 +40,7 @@ x=t
 and
 
 ```math
-y=v
+y=v.
 ```
 
 Our experimental data might therefore be
@@ -49,22 +60,33 @@ We want to find a mathematical function that describes the relationship between 
 For the simplest model,
 
 ```math
-\hat y=\beta_0+\beta_1x
+\hat{y}=\beta_0+\beta_1x
 ```
 
 where:
 
-- \(\beta_0\) is the intercept.
-- \(\beta_1\) is the slope.
-- \(\hat y\) is the predicted value.
+- ```math
+  \beta_0
+  ```
+  is the intercept.
+
+- ```math
+  \beta_1
+  ```
+  is the slope.
+
+- ```math
+  \hat{y}
+  ```
+  is the predicted value.
 
 For the velocity example,
 
 ```math
-\hat v=\beta_0+\beta_1t
+\hat{v}=\beta_0+\beta_1t
 ```
 
-Physically, we would interpret
+where
 
 ```math
 \beta_0\approx v_0
@@ -73,7 +95,7 @@ Physically, we would interpret
 and
 
 ```math
-\beta_1\approx a
+\beta_1\approx a.
 ```
 
 Therefore, linear regression is not merely "drawing a line through points."
@@ -92,18 +114,17 @@ We assume
 y_i=\beta_0+\beta_1x_i+\epsilon_i
 ```
 
-where \(\epsilon_i\) represents unexplained variation or measurement noise.
+where ```math
+\epsilon_i``` represents unexplained variation or measurement noise.
 
 Therefore,
 
 ```math
-\boxed{
 y_i
 =
 \underbrace{\beta_0+\beta_1x_i}_{\text{systematic component}}
 +
 \underbrace{\epsilon_i}_{\text{noise}}
-}
 ```
 
 The regression function is the conditional expectation:
@@ -115,7 +136,7 @@ E[Y\mid X=x]=\beta_0+\beta_1x
 provided that
 
 ```math
-E[\epsilon\mid X=x]=0
+E[\epsilon\mid X=x]=0.
 ```
 
 This distinction is fundamental.
@@ -196,7 +217,7 @@ This is the fundamental equation of linear regression.
 
 ## 5. What Exactly Are We Learning?
 
-The data \(X\) and \(\mathbf y\) are known.
+The data ```math X ``` and ```math \mathbf y ``` are known.
 
 The unknown quantity is the parameter vector:
 
@@ -246,7 +267,7 @@ and
 y_2=\beta_0+\beta_1x_2
 ```
 
-we could solve exactly for \(\beta_0\) and \(\beta_1\).
+we could solve exactly for ```math \beta_0 ``` and ```math \beta_1 ```.
 
 But in an experiment we generally have
 
@@ -275,13 +296,13 @@ This leads to **least squares**.
 For observation \(i\), the prediction is
 
 ```math
-\hat y_i=\beta_0+\beta_1x_i
+\hat{y}_i=\beta_0+\beta_1x_i
 ```
 
 The residual is
 
 ```math
-r_i=y_i-\hat y_i
+r_i=y_i-\hat{y}_i
 ```
 
 Therefore,
@@ -379,7 +400,7 @@ For example,
 while
 
 ```math
-5^2=25
+5^2=25.
 ```
 
 Thus large deviations receive disproportionately greater weight.
@@ -405,7 +426,7 @@ Suppose the measurement errors satisfy
 Then
 
 ```math
-p(y_i\mid x_i,\beta)
+p(y_i\mid x_i,\boldsymbol{\beta})
 =
 \frac{1}{\sqrt{2\pi\sigma^2}}
 \exp
@@ -475,7 +496,7 @@ Expand the expression:
 \boldsymbol{\beta}^TX^TX\boldsymbol{\beta}
 ```
 
-Take the gradient with respect to \(\boldsymbol{\beta}\):
+Take the gradient with respect to ```math \boldsymbol{\beta} ```:
 
 ```math
 \nabla_{\boldsymbol{\beta}}\mathcal L
@@ -532,15 +553,13 @@ If \(X^TX\) is invertible,
 
 ## 11. What Is Happening Geometrically?
 
-This is one of the most important interpretations of linear regression.
-
 The observation vector is
 
 ```math
 \mathbf y\in\mathbb R^N
 ```
 
-The columns of \(X\) span a subspace of \(\mathbb R^N\).
+The columns of \(X\) span a subspace of ```math \mathbb R^N ```.
 
 For simple linear regression,
 
@@ -592,7 +611,7 @@ But generally,
 
 because the observations contain noise.
 
-Therefore, we find the point in the column space closest to \(\mathbf y\).
+Therefore, we find the point in the column space closest to ```math \mathbf y ```.
 
 That point is
 
@@ -656,7 +675,7 @@ where
 and
 
 ```math
-\mathbf r\perp\operatorname{Col}(X)
+\mathbf r\perp\operatorname{Col}(X).
 ```
 
 This is the geometric meaning of the normal equations.
@@ -708,7 +727,7 @@ P^2=P
 and
 
 ```math
-P^T=P
+P^T=P.
 ```
 
 The residual-maker matrix is
@@ -722,7 +741,7 @@ and therefore
 ```math
 \mathbf r
 =
-(I-P)\mathbf y
+(I-P)\mathbf y.
 ```
 
 ---
@@ -766,7 +785,7 @@ and
 \bar y
 =
 \frac{1}{N}
-\sum_{i=1}^{N}y_i
+\sum_{i=1}^{N}y_i.
 ```
 
 The intercept is
@@ -839,10 +858,17 @@ f(x)
 
 where:
 
-- \(\phi_j(x)\) are known **basis functions**.
-- \(\beta_j\) are the parameters learned from data.
+- ```math
+  \phi_j(x)
+  ```
+  are known **basis functions**.
 
-The model is linear in the parameters \(\beta_j\), even when the basis functions are nonlinear in \(x\).
+- ```math
+  \beta_j
+  ```
+  are the parameters learned from data.
+
+The model is linear in the parameters ```math \beta_j ```, even when the basis functions are nonlinear in ```math x ```.
 
 Therefore, a model can be highly nonlinear in \(x\) and still be a linear regression model.
 
@@ -868,7 +894,7 @@ Rather,
 
 ## 17. Ordinary Linear Regression as a Basis-Function Model
 
-Ordinary linear regression uses
+Ordinary linear regression uses the basis functions
 
 ```math
 \phi_0(x)=1
@@ -877,7 +903,7 @@ Ordinary linear regression uses
 and
 
 ```math
-\phi_1(x)=x
+\phi_1(x)=x.
 ```
 
 Therefore,
@@ -895,7 +921,7 @@ becomes
 ```math
 f(x)
 =
-\beta_0+\beta_1x
+\beta_0+\beta_1x.
 ```
 
 This particular model happens to be linear in both the parameters and \(x\).
@@ -917,7 +943,7 @@ Consider the basis
 \qquad
 \ldots,
 \qquad
-\phi_p(x)=x^p
+\phi_p(x)=x^p.
 ```
 
 The resulting model is
@@ -933,7 +959,7 @@ f(x)
 +
 \cdots
 +
-\beta_px^p
+\beta_px^p.
 ```
 
 This is **nonlinear in \(x\)**.
@@ -949,7 +975,7 @@ f(x)
 +
 \cdots
 +
-\beta_p\phi_p(x)
+\beta_p\phi_p(x).
 ```
 
 Hence polynomial regression is a linear regression model in the parameters.
@@ -981,19 +1007,19 @@ and the parameter vector
 \beta_1\\
 \vdots\\
 \beta_p
-\end{bmatrix}
+\end{bmatrix}.
 ```
 
-Then
+Then the model becomes
 
 ```math
 f(x)
 =
 \boldsymbol{\beta}^{T}
-\boldsymbol{\phi}(x)
+\boldsymbol{\phi}(x).
 ```
 
-For \(N\) observations, the design matrix becomes
+For \(N\) observations, the design matrix is
 
 ```math
 X
@@ -1003,7 +1029,7 @@ X
 \phi_0(x_2) & \phi_1(x_2) & \cdots & \phi_p(x_2)\\
 \vdots & \vdots & \ddots & \vdots\\
 \phi_0(x_N) & \phi_1(x_N) & \cdots & \phi_p(x_N)
-\end{bmatrix}
+\end{bmatrix}.
 ```
 
 The model remains
@@ -1013,7 +1039,7 @@ The model remains
 =
 X\boldsymbol{\beta}
 +
-\boldsymbol{\epsilon}
+\boldsymbol{\epsilon}.
 ```
 
 Therefore, the least-squares problem remains
@@ -1024,15 +1050,15 @@ Therefore, the least-squares problem remains
 \arg\min_{\boldsymbol{\beta}}
 \left\|
 \mathbf y-X\boldsymbol{\beta}
-\right\|_2^2
+\right\|_2^2.
 ```
 
-and, when the inverse exists,
+If \(X^TX\) is invertible,
 
 ```math
 \hat{\boldsymbol{\beta}}
 =
-(X^TX)^{-1}X^T\mathbf y
+(X^TX)^{-1}X^T\mathbf y.
 ```
 
 The optimization machinery is therefore unchanged.
@@ -1045,7 +1071,7 @@ Only the **representation of the input** has changed.
 
 Different choices of basis functions produce different model classes.
 
-### Polynomial Basis
+### 20.1 Polynomial Basis
 
 ```math
 \phi_j(x)=x^j
@@ -1057,10 +1083,10 @@ giving
 f(x)
 =
 \sum_{j=0}^{p}
-\beta_jx^j
+\beta_jx^j.
 ```
 
-### Fourier Basis
+### 20.2 Fourier Basis
 
 For periodic phenomena, we may use
 
@@ -1071,7 +1097,7 @@ For periodic phenomena, we may use
 and
 
 ```math
-\phi_k^{(2)}(x)=\cos(kx)
+\phi_k^{(2)}(x)=\cos(kx).
 ```
 
 The resulting model can represent periodic behaviour:
@@ -1086,10 +1112,10 @@ a_0
 a_k\cos(kx)
 +
 b_k\sin(kx)
-\right]
+\right].
 ```
 
-### Gaussian Radial Basis Functions
+### 20.3 Gaussian Radial Basis Functions
 
 We may define
 
@@ -1099,7 +1125,7 @@ We may define
 \exp
 \left(
 -\frac{(x-\mu_j)^2}{2\sigma_j^2}
-\right)
+\right).
 ```
 
 The resulting model is
@@ -1108,12 +1134,12 @@ The resulting model is
 f(x)
 =
 \sum_{j=1}^{M}
-\beta_j\phi_j(x)
+\beta_j\phi_j(x).
 ```
 
 This can represent localized structures in the data.
 
-Other important choices include:
+Other choices include:
 
 - Wavelets
 - Splines
@@ -1138,7 +1164,7 @@ u(x)
 a_k\cos(kx)
 +
 b_k\sin(kx)
-\right]
+\right].
 ```
 
 A solution to a differential equation can similarly be approximated as
@@ -1147,7 +1173,7 @@ A solution to a differential equation can similarly be approximated as
 u(x)
 =
 \sum_{j=1}^{M}
-c_j\phi_j(x)
+c_j\phi_j(x).
 ```
 
 The choice of basis can therefore encode knowledge about the structure of the physical problem.
@@ -1166,27 +1192,22 @@ This gives a useful scientific interpretation:
 
 ## 22. Fixed Basis vs Learned Representation
 
-In classical basis-function regression, the basis functions are chosen beforehand.
+In classical basis-function regression, the basis functions are chosen beforehand:
 
 ```math
 x
 \rightarrow
-\{
-\phi_1(x),
-\phi_2(x),
-\ldots,
-\phi_M(x)
-\}
+\{\phi_1(x),\phi_2(x),\ldots,\phi_M(x)\}.
 ```
 
-The learning algorithm then determines the coefficients.
+The learning algorithm then determines the coefficients:
 
 ```math
 \{\phi_j\}
 \quad\text{fixed}
 \qquad
 \beta_j
-\quad\text{learned}
+\quad\text{learned}.
 ```
 
 In neural networks, the situation changes.
@@ -1232,7 +1253,7 @@ The conditional mean is linear in the parameters:
 ```math
 E[Y\mid X=x]
 =
-\beta_0+\beta_1x
+\beta_0+\beta_1x.
 ```
 
 More generally, with basis functions:
@@ -1241,13 +1262,13 @@ More generally, with basis functions:
 E[Y\mid X=x]
 =
 \sum_{j=0}^{p}
-\beta_j\phi_j(x)
+\beta_j\phi_j(x).
 ```
 
 ### 23.2 Zero Conditional Mean
 
 ```math
-E[\epsilon\mid X]=0
+E[\epsilon\mid X]=0.
 ```
 
 This is crucial for unbiased estimation.
@@ -1255,7 +1276,7 @@ This is crucial for unbiased estimation.
 ### 23.3 Constant Variance
 
 ```math
-\operatorname{Var}(\epsilon\mid X)=\sigma^2
+\operatorname{Var}(\epsilon\mid X)=\sigma^2.
 ```
 
 This is called **homoscedasticity**.
@@ -1269,7 +1290,7 @@ The errors are assumed independent in the classical setting.
 For exact small-sample hypothesis tests and likelihood-based inference, one often assumes
 
 ```math
-\epsilon_i\sim\mathcal N(0,\sigma^2)
+\epsilon_i\sim\mathcal N(0,\sigma^2).
 ```
 
 Gaussianity is **not required simply to calculate the ordinary least-squares coefficients**.
@@ -1291,7 +1312,7 @@ X\boldsymbol{\beta}
 with
 
 ```math
-E[\boldsymbol{\epsilon}\mid X]=0
+E[\boldsymbol{\epsilon}\mid X]=0.
 ```
 
 The estimator is
@@ -1299,7 +1320,7 @@ The estimator is
 ```math
 \hat{\boldsymbol{\beta}}
 =
-(X^TX)^{-1}X^T\mathbf y
+(X^TX)^{-1}X^T\mathbf y.
 ```
 
 Substitute the model:
@@ -1309,7 +1330,7 @@ Substitute the model:
 =
 (X^TX)^{-1}
 X^T
-(X\boldsymbol{\beta}+\boldsymbol{\epsilon})
+(X\boldsymbol{\beta}+\boldsymbol{\epsilon}).
 ```
 
 Therefore,
@@ -1319,7 +1340,7 @@ Therefore,
 =
 \boldsymbol{\beta}
 +
-(X^TX)^{-1}X^T\boldsymbol{\epsilon}
+(X^TX)^{-1}X^T\boldsymbol{\epsilon}.
 ```
 
 Taking the conditional expectation,
@@ -1327,7 +1348,7 @@ Taking the conditional expectation,
 ```math
 E[\hat{\boldsymbol{\beta}}\mid X]
 =
-\boldsymbol{\beta}
+\boldsymbol{\beta}.
 ```
 
 Thus the ordinary least-squares estimator is unbiased under the zero-conditional-mean assumption.
@@ -1341,7 +1362,7 @@ Assume
 ```math
 \operatorname{Var}(\boldsymbol{\epsilon}\mid X)
 =
-\sigma^2I
+\sigma^2I.
 ```
 
 Then
@@ -1396,7 +1417,7 @@ This is particularly important in physics.
 Measurements taken sequentially in time may satisfy
 
 ```math
-\operatorname{Cov}(\epsilon_i,\epsilon_j)\neq0
+\operatorname{Cov}(\epsilon_i,\epsilon_j)\neq0.
 ```
 
 The observations are then not independent.
@@ -1426,7 +1447,7 @@ Linear regression does not have to involve only one input.
 Suppose we want to predict a physical quantity using several measurements:
 
 ```math
-x_1,x_2,\ldots,x_p
+x_1,x_2,\ldots,x_p.
 ```
 
 The model becomes
@@ -1442,7 +1463,7 @@ y
 +\cdots+
 \beta_px_p
 +
-\epsilon
+\epsilon.
 ```
 
 In matrix notation,
@@ -1456,7 +1477,7 @@ In matrix notation,
 where
 
 ```math
-X\in\mathbb R^{N\times(p+1)}
+X\in\mathbb R^{N\times(p+1)}.
 ```
 
 The least-squares estimator remains
@@ -1490,7 +1511,7 @@ y
 +
 \beta_3x^3
 +
-\epsilon
+\epsilon.
 ```
 
 This is nonlinear in \(x\), but it is still linear in the parameters.
@@ -1504,7 +1525,7 @@ X=
 1 & x_2 & x_2^2 & x_2^3\\
 \vdots & \vdots & \vdots & \vdots\\
 1 & x_N & x_N^2 & x_N^3
-\end{bmatrix}
+\end{bmatrix}.
 ```
 
 The same least-squares machinery therefore applies.
@@ -1526,7 +1547,7 @@ This is connected to the rank of the design matrix.
 If the columns of \(X\) are linearly independent, then
 
 ```math
-\operatorname{rank}(X)=p+1
+\operatorname{rank}(X)=p+1.
 ```
 
 and \(X^TX\) is invertible.
@@ -1536,7 +1557,7 @@ If the columns are linearly dependent, the parameters cannot be uniquely determi
 For example, suppose two features satisfy
 
 ```math
-x_2=2x_1
+x_2=2x_1.
 ```
 
 Then the corresponding columns contain redundant information.
@@ -1598,7 +1619,7 @@ The loss is
 ```math
 \mathcal L(\boldsymbol{\beta})
 =
-\|\mathbf y-X\boldsymbol{\beta}\|_2^2
+\|\mathbf y-X\boldsymbol{\beta}\|_2^2.
 ```
 
 Its gradient is
@@ -1606,7 +1627,7 @@ Its gradient is
 ```math
 \nabla_{\boldsymbol{\beta}}\mathcal L
 =
-2X^T(X\boldsymbol{\beta}-\mathbf y)
+2X^T(X\boldsymbol{\beta}-\mathbf y).
 ```
 
 Gradient descent updates the parameters according to
@@ -1632,7 +1653,7 @@ Therefore,
 -
 2\eta
 X^T
-(X\boldsymbol{\beta}_k-\mathbf y)
+(X\boldsymbol{\beta}_k-\mathbf y).
 ```
 
 This is conceptually important because the same optimization idea appears throughout Machine Learning.
@@ -1650,7 +1671,7 @@ Its Hessian is
 ```math
 \nabla^2_{\boldsymbol{\beta}}\mathcal L
 =
-2X^TX
+2X^TX.
 ```
 
 Since
@@ -1663,7 +1684,7 @@ is positive semidefinite,
 
 ```math
 \nabla^2_{\boldsymbol{\beta}}\mathcal L
-\succeq0
+\succeq0.
 ```
 
 Therefore, the loss has no spurious local minima.
@@ -1683,7 +1704,7 @@ The least-squares objective measures how well the model fits the training data:
 =
 \frac{1}{N}
 \sum_{i=1}^{N}
-(y_i-\hat y_i)^2
+(y_i-\hat y_i)^2.
 ```
 
 But our real objective is not simply to memorize the training observations.
@@ -1699,7 +1720,7 @@ Therefore, we distinguish between:
 and
 
 ```math
-\text{Test Error}
+\text{Test Error}.
 ```
 
 A model that fits the training data extremely well can still perform poorly on new data.
@@ -1721,7 +1742,7 @@ For an estimator of a target quantity, the expected squared prediction error can
 +
 \text{Variance}
 +
-\text{Irreducible Noise}
+\text{Irreducible Noise}.
 ```
 
 A model with too little flexibility may have high bias.
@@ -1761,7 +1782,7 @@ Ridge regression minimizes
 =
 \|\mathbf y-X\boldsymbol{\beta}\|_2^2
 +
-\lambda\|\boldsymbol{\beta}\|_2^2
+\lambda\|\boldsymbol{\beta}\|_2^2.
 ```
 
 where
@@ -1769,7 +1790,7 @@ where
 ```math
 \|\boldsymbol{\beta}\|_2^2
 =
-\sum_j\beta_j^2
+\sum_j\beta_j^2.
 ```
 
 The solution is
@@ -1791,7 +1812,7 @@ Lasso instead uses an \(L^1\) penalty:
 =
 \|\mathbf y-X\boldsymbol{\beta}\|_2^2
 +
-\lambda\|\boldsymbol{\beta}\|_1
+\lambda\|\boldsymbol{\beta}\|_1.
 ```
 
 where
@@ -1799,7 +1820,7 @@ where
 ```math
 \|\boldsymbol{\beta}\|_1
 =
-\sum_j|\beta_j|
+\sum_j|\beta_j|.
 ```
 
 The \(L^1\) penalty can encourage sparse parameter vectors.
@@ -1823,22 +1844,22 @@ Consider an experiment in which the velocity of an object is measured at differe
 The physical model is
 
 ```math
-v(t)=v_0+at
+v(t)=v_0+at.
 ```
 
 Suppose our measurements contain noise:
 
 ```math
-v_i=v_0+at_i+\epsilon_i
+v_i=v_0+at_i+\epsilon_i.
 ```
 
 Compare this with the regression model:
 
 ```math
-y_i=\beta_0+\beta_1x_i+\epsilon_i
+y_i=\beta_0+\beta_1x_i+\epsilon_i.
 ```
 
-The correspondence is
+The correspondence is:
 
 ```math
 y_i\leftrightarrow v_i
@@ -1853,7 +1874,7 @@ x_i\leftrightarrow t_i
 ```
 
 ```math
-\beta_1\leftrightarrow a
+\beta_1\leftrightarrow a.
 ```
 
 Therefore, fitting linear regression to the experimental data estimates the physical parameters.
@@ -1876,7 +1897,7 @@ This is a useful way to understand why Machine Learning and scientific modelling
 
 ---
 
-## 37. A Deeper Physics Example: Hubble's Law
+## 37. Connection to Physics: Hubble's Law
 
 A particularly useful scientific example is the relationship between recession velocity and distance.
 
@@ -1891,7 +1912,7 @@ where \(H_0\) is the Hubble constant.
 Real observations contain uncertainties:
 
 ```math
-v_i=H_0d_i+\epsilon_i
+v_i=H_0d_i+\epsilon_i.
 ```
 
 This is a linear regression model with zero intercept.
@@ -1902,7 +1923,7 @@ The least-squares estimate is obtained by minimizing
 \mathcal L(H_0)
 =
 \sum_{i=1}^{N}
-(v_i-H_0d_i)^2
+(v_i-H_0d_i)^2.
 ```
 
 Taking the derivative,
@@ -1912,7 +1933,7 @@ Taking the derivative,
 =
 -2
 \sum_{i=1}^{N}
-d_i(v_i-H_0d_i)
+d_i(v_i-H_0d_i).
 ```
 
 Setting it to zero gives
@@ -1920,7 +1941,7 @@ Setting it to zero gives
 ```math
 \sum_i d_iv_i
 =
-H_0\sum_i d_i^2
+H_0\sum_i d_i^2.
 ```
 
 Therefore,
