@@ -1,11 +1,19 @@
 # Test
 
-The parameter $\theta$ is learned by minimizing the loss.
+The model learns a function:
 
-$$
+\mathcal{f}_{\theta} : \mathcal{X} \rightarrow \mathcal{Y}
+
+The loss function is:
+
 \mathcal{L}(\theta)
 =
 \frac{1}{N}
 \sum_{i=1}^{N}
-\ell(f_\theta(x_i),y_i)
-$$
+\ell(f_{\theta}(x_i),y_i)
+
+Training solves:
+
+\theta^*
+=
+\arg\min_{\theta} \mathcal{L}(\theta)
