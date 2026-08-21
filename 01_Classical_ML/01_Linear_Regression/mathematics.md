@@ -1224,3 +1224,810 @@ and the unexplained variation is represented by
 ```
 
 The next step is to determine the parameter vector that makes the model fit the observed data as closely as possible.
+## 23. Least Squares
+
+We now have the matrix model
+
+```math
+\mathbf{y}
+=
+X\boldsymbol{\beta}
++
+\boldsymbol{\epsilon}
+```
+
+The corresponding prediction is
+
+```math
+\hat{\mathbf{y}}
+=
+X\boldsymbol{\beta}
+```
+
+Therefore, the residual vector is
+
+```math
+\mathbf{r}
+=
+\mathbf{y}
+-
+\hat{\mathbf{y}}
+```
+
+Substituting the prediction gives
+
+```math
+\mathbf{r}
+=
+\mathbf{y}
+-
+X\boldsymbol{\beta}
+```
+
+The goal is to choose the parameter vector that makes the residuals as small as possible.
+
+We measure the total squared residual using
+
+```math
+\mathcal{L}(\boldsymbol{\beta})
+=
+\left\|
+\mathbf{y}
+-
+X\boldsymbol{\beta}
+\right\|_2^2
+```
+
+This is the **least-squares loss function**.
+
+---
+
+## 24. Why Do We Square the Residuals?
+
+For an individual observation, the residual is
+
+```math
+r_i
+=
+y_i-\hat{y}_i
+```
+
+If we simply added the residuals,
+
+```math
+\sum_{i=1}^{N}r_i
+```
+
+positive and negative residuals could cancel each other.
+
+For example, suppose
+
+```math
+r_1
+=
+5
+```
+
+and
+
+```math
+r_2
+=
+-5
+```
+
+Then
+
+```math
+r_1+r_2
+=
+0
+```
+
+even though both observations have nonzero errors.
+
+Therefore, we use squared residuals.
+
+The scalar least-squares objective is
+
+```math
+\mathcal{L}(\boldsymbol{\beta})
+=
+\sum_{i=1}^{N}
+\left(
+y_i-\hat{y}_i
+\right)^2
+```
+
+Using the regression model,
+
+```math
+\hat{y}_i
+=
+\sum_{j=0}^{p}
+\beta_j\phi_j(x_i)
+```
+
+we obtain
+
+```math
+\mathcal{L}(\boldsymbol{\beta})
+=
+\sum_{i=1}^{N}
+\left(
+y_i
+-
+\sum_{j=0}^{p}
+\beta_j\phi_j(x_i)
+\right)^2
+```
+
+The parameter vector is chosen to minimize this quantity.
+
+---
+
+## 25. Matrix Form of the Loss
+
+The residual vector is
+
+```math
+\mathbf{r}
+=
+\mathbf{y}
+-
+X\boldsymbol{\beta}
+```
+
+Its squared Euclidean norm is
+
+```math
+\left\|
+\mathbf{r}
+\right\|_2^2
+=
+\mathbf{r}^T\mathbf{r}
+```
+
+Therefore,
+
+```math
+\mathcal{L}(\boldsymbol{\beta})
+=
+\left(
+\mathbf{y}
+-
+X\boldsymbol{\beta}
+\right)^T
+\left(
+\mathbf{y}
+-
+X\boldsymbol{\beta}
+\right)
+```
+
+Expanding the product gives
+
+```math
+\mathcal{L}(\boldsymbol{\beta})
+=
+\mathbf{y}^T\mathbf{y}
+-
+2\boldsymbol{\beta}^TX^T\mathbf{y}
++
+\boldsymbol{\beta}^TX^TX\boldsymbol{\beta}
+```
+
+The first term does not depend on the parameters.
+
+The second term is linear in the parameters.
+
+The third term is quadratic in the parameters.
+
+The objective is therefore a quadratic function of the parameter vector.
+
+---
+
+## 26. Minimizing the Loss
+
+We want to find the parameter vector that minimizes the loss.
+
+```math
+\hat{\boldsymbol{\beta}}
+=
+\underset{\boldsymbol{\beta}}{\operatorname{argmin}}
+\mathcal{L}(\boldsymbol{\beta})
+```
+
+Using the expanded expression,
+
+```math
+\hat{\boldsymbol{\beta}}
+=
+\underset{\boldsymbol{\beta}}{\operatorname{argmin}}
+\left(
+\mathbf{y}^T\mathbf{y}
+-
+2\boldsymbol{\beta}^TX^T\mathbf{y}
++
+\boldsymbol{\beta}^TX^TX\boldsymbol{\beta}
+\right)
+```
+
+To find the minimum, we differentiate with respect to the parameter vector.
+
+---
+
+## 27. Taking the Gradient
+
+The loss is
+
+```math
+\mathcal{L}(\boldsymbol{\beta})
+=
+\mathbf{y}^T\mathbf{y}
+-
+2\boldsymbol{\beta}^TX^T\mathbf{y}
++
+\boldsymbol{\beta}^TX^TX\boldsymbol{\beta}
+```
+
+Take the gradient with respect to
+
+```math
+\boldsymbol{\beta}
+```
+
+The first term contains no parameter.
+
+Therefore,
+
+```math
+\nabla_{\boldsymbol{\beta}}
+\left(
+\mathbf{y}^T\mathbf{y}
+\right)
+=
+0
+```
+
+For the second term,
+
+```math
+\nabla_{\boldsymbol{\beta}}
+\left(
+-2\boldsymbol{\beta}^TX^T\mathbf{y}
+\right)
+=
+-2X^T\mathbf{y}
+```
+
+For the third term,
+
+```math
+\nabla_{\boldsymbol{\beta}}
+\left(
+\boldsymbol{\beta}^TX^TX\boldsymbol{\beta}
+\right)
+=
+2X^TX\boldsymbol{\beta}
+```
+
+Therefore,
+
+```math
+\nabla_{\boldsymbol{\beta}}
+\mathcal{L}
+=
+-2X^T\mathbf{y}
++
+2X^TX\boldsymbol{\beta}
+```
+
+At the minimum, the gradient must vanish.
+
+```math
+\nabla_{\boldsymbol{\beta}}
+\mathcal{L}
+=
+0
+```
+
+Therefore,
+
+```math
+-2X^T\mathbf{y}
++
+2X^TX\hat{\boldsymbol{\beta}}
+=
+0
+```
+
+Dividing by 2 gives
+
+```math
+X^TX\hat{\boldsymbol{\beta}}
+=
+X^T\mathbf{y}
+```
+
+These are the **normal equations**.
+
+---
+
+## 28. The Normal Equations
+
+The normal equations are
+
+```math
+\boxed{
+X^TX\hat{\boldsymbol{\beta}}
+=
+X^T\mathbf{y}
+}
+```
+
+They determine the least-squares parameter estimate.
+
+The equation can be understood directly from the residual.
+
+The fitted residual is
+
+```math
+\mathbf{r}
+=
+\mathbf{y}
+-
+X\hat{\boldsymbol{\beta}}
+```
+
+The normal equations imply
+
+```math
+X^T
+\left(
+\mathbf{y}
+-
+X\hat{\boldsymbol{\beta}}
+\right)
+=
+0
+```
+
+Therefore,
+
+```math
+X^T\mathbf{r}
+=
+0
+```
+
+This means that the residual is orthogonal to every column of the design matrix.
+
+The algebraic condition and the geometric condition are therefore the same statement.
+
+---
+
+## 29. Geometric Meaning of Least Squares
+
+Every possible prediction has the form
+
+```math
+X\boldsymbol{\beta}
+```
+
+Therefore, every possible prediction belongs to the column space of X.
+
+The column space is
+
+```math
+\operatorname{Col}(X)
+=
+\left\{
+X\boldsymbol{\beta}
+:
+\boldsymbol{\beta}
+\in
+\mathbb{R}^{p+1}
+\right\}
+```
+
+The observed output vector is
+
+```math
+\mathbf{y}
+```
+
+In general,
+
+```math
+\mathbf{y}
+\notin
+\operatorname{Col}(X)
+```
+
+Therefore, there may be no parameter vector satisfying
+
+```math
+X\boldsymbol{\beta}
+=
+\mathbf{y}
+```
+
+Instead, least squares searches for the vector in the column space that is closest to
+
+```math
+\mathbf{y}
+```
+
+Thus,
+
+```math
+\boxed{
+\hat{\mathbf{y}}
+=
+X\hat{\boldsymbol{\beta}}
+}
+```
+
+is the orthogonal projection of
+
+```math
+\mathbf{y}
+```
+
+onto the column space of X.
+
+---
+
+## 30. The Column Space for Ordinary Linear Regression
+
+For ordinary linear regression,
+
+```math
+X
+=
+\begin{bmatrix}
+1 & x_1\\
+1 & x_2\\
+\vdots & \vdots\\
+1 & x_N
+\end{bmatrix}
+```
+
+The first column is
+
+```math
+\begin{bmatrix}
+1\\
+1\\
+\vdots\\
+1
+\end{bmatrix}
+```
+
+and the second column is
+
+```math
+\begin{bmatrix}
+x_1\\
+x_2\\
+\vdots\\
+x_N
+\end{bmatrix}
+```
+
+Therefore,
+
+```math
+\operatorname{Col}(X)
+=
+\operatorname{span}
+\left\{
+\begin{bmatrix}
+1\\
+1\\
+\vdots\\
+1
+\end{bmatrix},
+\begin{bmatrix}
+x_1\\
+x_2\\
+\vdots\\
+x_N
+\end{bmatrix}
+\right\}
+```
+
+Every prediction vector produced by the ordinary linear regression model lies in this space.
+
+The least-squares solution selects the prediction vector in this space that is closest to the observed vector.
+
+---
+
+## 31. The Closed-Form Solution
+
+Suppose
+
+```math
+X^TX
+```
+
+is invertible.
+
+Starting from the normal equations,
+
+```math
+X^TX\hat{\boldsymbol{\beta}}
+=
+X^T\mathbf{y}
+```
+
+multiply both sides by
+
+```math
+(X^TX)^{-1}
+```
+
+to obtain
+
+```math
+(X^TX)^{-1}
+X^TX
+\hat{\boldsymbol{\beta}}
+=
+(X^TX)^{-1}
+X^T\mathbf{y}
+```
+
+Since
+
+```math
+(X^TX)^{-1}X^TX
+=
+I
+```
+
+we obtain
+
+```math
+\boxed{
+\hat{\boldsymbol{\beta}}
+=
+(X^TX)^{-1}X^T\mathbf{y}
+}
+```
+
+This is the ordinary least-squares estimator.
+
+---
+
+## 32. The Fitted Values
+
+Once the parameters have been estimated, the fitted prediction vector is
+
+```math
+\hat{\mathbf{y}}
+=
+X\hat{\boldsymbol{\beta}}
+```
+
+Substituting the closed-form estimator gives
+
+```math
+\hat{\mathbf{y}}
+=
+X
+(X^TX)^{-1}
+X^T\mathbf{y}
+```
+
+Define
+
+```math
+P_X
+=
+X(X^TX)^{-1}X^T
+```
+
+Then
+
+```math
+\hat{\mathbf{y}}
+=
+P_X\mathbf{y}
+```
+
+The matrix
+
+```math
+P_X
+```
+
+is the projection matrix onto the column space of X.
+
+Therefore,
+
+```math
+\boxed{
+\hat{\mathbf{y}}
+=
+P_X\mathbf{y}
+}
+```
+
+is the projection of the observed output vector onto the space of predictions allowed by the model.
+
+---
+
+## 33. The Residual Vector
+
+The residual vector is
+
+```math
+\mathbf{r}
+=
+\mathbf{y}
+-
+\hat{\mathbf{y}}
+```
+
+Using the projection matrix,
+
+```math
+\mathbf{r}
+=
+\mathbf{y}
+-
+P_X\mathbf{y}
+```
+
+Therefore,
+
+```math
+\mathbf{r}
+=
+(I-P_X)\mathbf{y}
+```
+
+The residual is orthogonal to the column space of X.
+
+This is expressed algebraically as
+
+```math
+X^T\mathbf{r}
+=
+0
+```
+
+Substituting the residual gives
+
+```math
+X^T
+\left(
+\mathbf{y}
+-
+X\hat{\boldsymbol{\beta}}
+\right)
+=
+0
+```
+
+which is exactly the normal equation.
+
+---
+
+## 34. Consequence of Including an Intercept
+
+When the model contains an intercept, the first column of X is the vector of ones.
+
+Therefore, the orthogonality condition implies
+
+```math
+\begin{bmatrix}
+1&
+1&
+\cdots&
+1
+\end{bmatrix}
+\mathbf{r}
+=
+0
+```
+
+Hence,
+
+```math
+\boxed{
+\sum_{i=1}^{N}r_i
+=
+0
+}
+```
+
+So the residuals sum to zero when an intercept is included in the least-squares model.
+
+This does not mean that every residual is zero.
+
+It means that positive and negative residuals balance in the least-squares solution.
+
+---
+
+## 35. What We Have Derived
+
+We started with the model
+
+```math
+\mathbf{y}
+=
+X\boldsymbol{\beta}
++
+\boldsymbol{\epsilon}
+```
+
+The prediction is
+
+```math
+\hat{\mathbf{y}}
+=
+X\boldsymbol{\beta}
+```
+
+The residual is
+
+```math
+\mathbf{r}
+=
+\mathbf{y}
+-
+X\boldsymbol{\beta}
+```
+
+The least-squares objective is
+
+```math
+\mathcal{L}(\boldsymbol{\beta})
+=
+\left\|
+\mathbf{y}
+-
+X\boldsymbol{\beta}
+\right\|_2^2
+```
+
+The gradient is
+
+```math
+\nabla_{\boldsymbol{\beta}}\mathcal{L}
+=
+-2X^T\mathbf{y}
++
+2X^TX\boldsymbol{\beta}
+```
+
+Setting the gradient equal to zero gives
+
+```math
+X^TX\hat{\boldsymbol{\beta}}
+=
+X^T\mathbf{y}
+```
+
+If the inverse exists,
+
+```math
+\hat{\boldsymbol{\beta}}
+=
+(X^TX)^{-1}X^T\mathbf{y}
+```
+
+The fitted values are
+
+```math
+\hat{\mathbf{y}}
+=
+X\hat{\boldsymbol{\beta}}
+```
+
+and geometrically they are the orthogonal projection of the observed output vector onto the column space of X.
+
+The next step is to specialize this general result to the two-parameter model and derive the familiar formulas for the slope and intercept.
