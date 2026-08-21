@@ -20,7 +20,7 @@ The loss function is
 \mathcal{L}(\boldsymbol{\beta})
 =
 \sum_{i=1}^{N}
-(y_i-\hat y_i)^2
+(y_i-\hat{y}_i)^2
 ```
 
 The design matrix is
@@ -40,7 +40,7 @@ The gradient is
 ```math
 \nabla_{\boldsymbol{\beta}}\mathcal{L}
 =
--2X^T\mathbf y
+-2X^T\mathbf{y}
 +
 2X^TX\boldsymbol{\beta}
 ```
@@ -48,9 +48,9 @@ The gradient is
 The column space is
 
 ```math
-\operatorname{Col}(X)
+\mathrm{Col}(X)
 =
-\operatorname{span}
+\mathrm{span}
 \left\{
 \begin{bmatrix}
 1\\
@@ -72,13 +72,39 @@ The fitted parameters are
 ```math
 \hat{\boldsymbol{\beta}}
 =
-(X^TX)^{-1}X^T\mathbf y
+(X^TX)^{-1}X^T\mathbf{y}
 ```
 
-And the prediction is
+And the prediction using a basis-function representation is
 
 ```math
-\hat y
+\hat{y}
 =
-\hat{\boldsymbol{\beta}}^T\boldsymbol{\phi}(x)
+\hat{\boldsymbol{\beta}}^T
+\boldsymbol{\phi}(x)
+```
+
+A polynomial basis can be written as
+
+```math
+\phi_j(x)=x^j
+```
+
+giving
+
+```math
+f(x)
+=
+\sum_{j=0}^{p}
+\beta_j\phi_j(x)
+```
+
+The least-squares objective can also be written as
+
+```math
+\mathcal{L}(\boldsymbol{\beta})
+=
+\left\|
+\mathbf{y}-X\boldsymbol{\beta}
+\right\|_2^2
 ```
