@@ -1,58 +1,22 @@
-ϵ
-i
-	​
-
+```math
+\epsilon_i
+```
 
 represents measurement noise.
 
 The model is
 
-y
-i
-	​
-
-=β
-0
-	​
-
-+β
-1
-	​
-
-x
-i
-	​
-
-+ϵ
-i
-	​
-
+```math
+y_i=\beta_0+\beta_1x_i+\epsilon_i
+```
 
 and the loss is
 
-L(β)=
-N
-1
-	​
-
-i=1
-∑
-N
-	​
-
-(y
-i
-	​
-
-−
-y
-^
-	​
-
-i
-	​
-
-)
-2
-
+```math
+\mathcal{L}(\beta)
+=
+\frac{1}{N}
+\sum_{i=1}^{N}
+(y_i-\hat y_i)^2
+```
 
