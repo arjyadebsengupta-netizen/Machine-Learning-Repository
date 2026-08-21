@@ -145,8 +145,6 @@ Examples:
 - Estimating a physical parameter
 - Classifying particles
 
----
-
 ### Unsupervised Learning
 
 Only the observations are provided:
@@ -163,8 +161,6 @@ Examples:
 - Finding phases of matter
 - Dimensionality reduction
 - Discovering latent representations
-
----
 
 ### Reinforcement Learning
 
@@ -183,8 +179,6 @@ Applications include:
 - Experimental optimization
 - Autonomous scientific discovery
 
----
-
 ### Transfer Learning
 
 A model trained on one task or dataset is adapted to a related task.
@@ -197,21 +191,19 @@ $$
 \text{Target Task}
 $$
 
-This is particularly useful when the target dataset is small but a related, larger dataset is available.
+This is useful when the target dataset is small but a related, larger dataset is available.
 
 Examples:
 
 - Adapting a pretrained vision model to microscopy images
 - Transferring molecular representations between related chemical-property prediction tasks
-- Fine-tuning pretrained scientific models
-
----
+- Fine-tuning a pretrained scientific model
 
 ### Zero-Shot Learning
 
 A model performs a task or makes predictions for classes or situations that were **not explicitly represented during training**.
 
-The model relies on additional information or learned relationships that connect known and unseen cases.
+The model relies on additional information or a learned relationship that connects the known and unseen cases.
 
 Conceptually:
 
@@ -227,7 +219,7 @@ Examples include:
 
 - Classifying previously unseen categories
 - Predicting properties for previously unseen molecular classes
-- Applying pretrained models to tasks without task-specific examples
+- Applying a pretrained model to a task without task-specific examples
 
 ---
 
