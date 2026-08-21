@@ -17,13 +17,13 @@ For physics and chemistry, this does **not** mean replacing physical theory. Ins
 
 The central idea is:
 
-\[
+$$
 \boxed{\text{Data} \rightarrow \text{Model} \rightarrow \text{Prediction}}
-\]
+$$
 
 But understanding ML properly requires going further:
 
-\[
+$$
 \boxed{
 \text{Data}
 \rightarrow
@@ -35,7 +35,7 @@ But understanding ML properly requires going further:
 \rightarrow
 \text{Generalization}
 }
-\]
+$$
 
 ---
 
@@ -45,27 +45,27 @@ In traditional modelling, we generally begin with a physical or chemical theory.
 
 For example,
 
-\[
+$$
 F=ma
-\]
+$$
 
 or a differential equation
 
-\[
+$$
 \frac{\partial u}{\partial t}
 =
 \mathcal{F}(u).
-\]
+$$
 
 We then solve the equations, analytically or numerically.
 
 In Machine Learning, we instead attempt to learn a mapping from observations:
 
-\[
+$$
 f_\theta(x)\approx y.
-\]
+$$
 
-The parameters \(\theta\) are determined from data by minimizing an objective function.
+The parameters $\theta$ are determined from data by minimizing an objective function.
 
 This distinction is important:
 
@@ -79,36 +79,36 @@ Modern scientific ML increasingly combines both.
 
 A machine-learning problem can often be formulated as finding a function from some hypothesis class:
 
-\[
+$$
 f_\theta:\mathcal X\rightarrow\mathcal Y
-\]
+$$
 
 such that its predictions agree with observed data.
 
 Given training data
 
-\[
+$$
 \mathcal D=\{(x_i,y_i)\}_{i=1}^{N},
-\]
+$$
 
 we define a loss
 
-\[
+$$
 \mathcal L(\theta)
 =
 \frac{1}{N}
 \sum_{i=1}^{N}
 \ell(f_\theta(x_i),y_i).
-\]
+$$
 
 Training then becomes an optimization problem:
 
-\[
+$$
 \theta^*
 =
 \arg\min_\theta
 \mathcal L(\theta).
-\]
+$$
 
 This connects Machine Learning directly to familiar mathematics:
 
@@ -128,15 +128,15 @@ This connects Machine Learning directly to familiar mathematics:
 
 We have input-output pairs:
 
-\[
+$$
 (x_i,y_i).
-\]
+$$
 
 The objective is to learn
 
-\[
+$$
 x\rightarrow y.
-\]
+$$
 
 Examples:
 
@@ -149,9 +149,9 @@ Examples:
 
 Only the observations are provided:
 
-\[
+$$
 \{x_1,x_2,\ldots,x_N\}.
-\]
+$$
 
 The objective is to discover structure in the data.
 
@@ -166,9 +166,9 @@ Examples:
 
 An agent interacts with an environment:
 
-\[
+$$
 s_t\rightarrow a_t\rightarrow r_t\rightarrow s_{t+1}.
-\]
+$$
 
 The objective is to learn a policy that maximizes expected cumulative reward.
 
@@ -183,13 +183,13 @@ Applications include:
 
 A model trained on one task or dataset is adapted to a related task.
 
-\[
+$$
 \text{Source Task}
 \rightarrow
 \text{Learned Representation}
 \rightarrow
 \text{Target Task}
-\]
+$$
 
 This is useful when the target dataset is small but a related, larger dataset is available.
 
@@ -207,13 +207,13 @@ The model relies on additional information or a learned relationship that connec
 
 Conceptually:
 
-\[
+$$
 \text{Training Classes}
 +
 \text{Semantic/Structural Information}
 \rightarrow
 \text{Unseen Classes}
-\]
+$$
 
 Examples include:
 
@@ -241,21 +241,21 @@ This leads to **Scientific Machine Learning (SciML)**.
 
 Instead of simply learning
 
-\[
+$$
 f_\theta(x)\approx y,
-\]
+$$
 
 we may construct a model that incorporates known scientific structure.
 
 For example:
 
-\[
+$$
 \mathcal L
 =
 \mathcal L_{\text{data}}
 +
 \lambda\mathcal L_{\text{physics}}.
-\]
+$$
 
 This idea eventually leads to Physics-Informed Neural Networks, physics-informed operators, equivariant networks, and other forms of scientific ML.
 
@@ -269,9 +269,9 @@ Machine Learning can be applied to problems such as:
 
 Given configurations of a system,
 
-\[
+$$
 x_i=(s_1,s_2,\ldots,s_N),
-\]
+$$
 
 ML can help classify phases or identify phase transitions.
 
@@ -279,9 +279,9 @@ ML can help classify phases or identify phase transitions.
 
 A neural network can approximate an expensive numerical calculation:
 
-\[
+$$
 x\rightarrow f(x).
-\]
+$$
 
 The trained model can then act as a surrogate.
 
@@ -299,15 +299,15 @@ ML can be used for:
 
 Instead of solving a PDE independently for every parameter configuration, one can attempt to learn
 
-\[
+$$
 u(x;\mu)
-\]
+$$
 
 or even the operator
 
-\[
+$$
 \mathcal G:u\rightarrow v.
-\]
+$$
 
 The latter idea leads to **Neural Operators**, which will be discussed later in this repository.
 
@@ -330,11 +330,11 @@ ML can be used for:
 
 For example:
 
-\[
+$$
 \text{Molecular structure}
 \rightarrow
 \text{Predicted property}.
-\]
+$$
 
 The representation of the molecule itself becomes an important mathematical and ML problem.
 
@@ -365,7 +365,7 @@ The code is treated as an exercise in translating mathematical concepts into com
 
 The material progresses from relatively simple mathematical models toward modern scientific ML:
 
-\[
+$$
 \boxed{
 \text{Classical ML}
 \rightarrow
@@ -379,11 +379,11 @@ The material progresses from relatively simple mathematical models toward modern
 \rightarrow
 \text{Neural Operators}
 }
-\]
+$$
 
 Later, these ideas can be combined with scientific knowledge:
 
-\[
+$$
 \boxed{
 \text{Machine Learning}
 +
@@ -391,6 +391,7 @@ Later, these ideas can be combined with scientific knowledge:
 \rightarrow
 \text{Scientific Machine Learning}
 }
-\]
+$$
 
 The goal is therefore not simply to learn how to **use** ML libraries, but to understand the mathematical structures underlying the algorithms and eventually apply them to scientific problems.
+
