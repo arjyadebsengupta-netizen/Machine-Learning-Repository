@@ -30,6 +30,7 @@ A comprehensive repository covering classical machine learning algorithms, deep 
 │   ├── 04_PINN/
 │   ├── 05_Autoencoder/
 │   └── 06_Transformer/
+|   |___07_GNN/
 └── 03_Neural_Operators/
     └── Neural_Operators/
 ```
