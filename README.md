@@ -70,7 +70,7 @@ A comprehensive repository covering classical machine learning algorithms, deep 
 | `04_PINN` | **Physics-Informed Neural Networks** | Solving differential equations by embedding PDE constraints and boundary conditions into loss functions. |
 | `05_Autoencoder` | **Autoencoders** | Bottleneck feature compression, reconstruction loss, and latent space representations. |
 | `06_Transformer` | **Transformers** | Self-attention mechanisms, Scaled Dot-Product Attention, Multi-Head Attention, and positional encodings. |
-
+|`07_GNN` | **Graph Neural Networks** | Preliminary graph theory, graph construction and it's usage|
 ---
 
 ### Part 3: Neural Operators (`03_Neural_Operators`)
