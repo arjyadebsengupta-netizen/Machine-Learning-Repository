@@ -1,13 +1,15 @@
 # Machine Learning, Deep Learning, and Neural Operators
 
 A comprehensive repository covering classical machine learning algorithms, deep learning architectures, and neural operators.
-The best order for reading is
-1.Overview of Machine Learning
-2.Dataset_types_in_Machine_learning
-3.01_Classical_ML
-4.02_Deep_Learning
-5.03_Neural Operators
----
+The best order for reading is:
+
+<ol type="I">
+  <li>Overview of Machine Learning</li>
+  <li>Dataset_types_in_Machine_learning</li>
+  <li>01_Classical_ML</li>
+  <li>02_Deep_Learning</li>
+  <li>03_Neural Operators</li>
+</ol>
 
 ## Repository Structure
 
