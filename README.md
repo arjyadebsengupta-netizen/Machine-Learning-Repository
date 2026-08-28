@@ -32,17 +32,18 @@ A comprehensive repository covering classical machine learning algorithms, deep 
 │   └── 06_Transformer/
 |   |___07_GNN/
 └── 03_Neural_Operators/
-    └── Neural_Operators/
-    └──
-    └──
-    └──
-    └──
-    └──
-    └──
-    └──
-    └──
-    └──
-    └──
+    └── 00_Introduction to Neural Operators
+    └── CATO
+    └── DeepONet
+    └── FNO
+    └── Factformer
+    └── GNO
+    └── GNOT
+    └── LinearNO
+    └── MAGNO
+    └── MPNOT
+    └── PINO
+    └── Transolver
 
 ```
 
@@ -88,7 +89,18 @@ A comprehensive repository covering classical machine learning algorithms, deep 
 
 | Directory | Topic | Description |
 | :--- | :--- | :--- |
-| `Neural_Operators` | **Neural Operators** | Infinite-dimensional mapping between function spaces for learning operators and solving parametric PDEs. |
+| `00_Introduction to Neural Operators` | **Introduction to Neural Operators** | Foundations of operator learning, function spaces, operator mappings, discretization invariance, and applications to parametric PDEs. |
+| `CATO` | **Charted Axial Transformer Operator** | Transformer-based neural operator using axial attention for learning mappings between function spaces. |
+| `DeepONet` | **Deep Operator Network** | Branch-trunk neural architecture for learning nonlinear operators from input functions to output functions. |
+| `FNO` | **Fourier Neural Operator** | Learns operators through Fourier-domain transformations for efficient PDE modeling. |
+| `Factformer` | **FactFormer** | Factorized-attention Transformer architecture for efficient neural operator learning. |
+| `GNO` | **Graph Neural Operator** | Graph-based neural operator for learning operator mappings on irregular domains and meshes. |
+| `GNOT` | **General Neural Operator Transformer** | Transformer-based neural operator using attention mechanisms to learn complex operator mappings. |
+| `LinearNO` | **Linear Attention Neural Operator** | Neural operator based on linear attention for efficient operator learning. |
+| `MAGNO` | **Multiscale Attentional Graph Neural Operator** | Graph neural operator incorporating multiscale representations and attentional spatial interactions. |
+| `MPNOT` | **Multi-particle Neural Operator Transformer** | Transformer-based neural operator designed for learning multi-particle system dynamics. |
+| `PINO` | **Physics-Informed Neural Operator** | Neural operator that incorporates governing physical laws and PDE constraints into training. |
+| `Transolver` | **Transolver: A Fast Transformer Solver for PDEs on General Geometries** | Transformer-based PDE solver designed to efficiently learn physical fields on general geometries. |
 
 ---
 
@@ -104,5 +116,11 @@ python3 -m venv venv
 source venv/bin/activate
 
 # Install dependencies
-pip install numpy scipy torch matplotlib
+pip install numpy scipy torch matplotlib neuraloperator
+
+# Neural Operator imports
+from neuralop.models import FNO
+from neuralop.layers import SpectralConv
+from neuralop.losses import LpLoss, H1Loss
+from neuralop.data.datasets import load_darcy_flow_small
 ```
