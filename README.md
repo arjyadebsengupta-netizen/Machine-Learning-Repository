@@ -6,6 +6,7 @@ The best order for reading is:
 <ol type="I">
   <li>Overview of Machine Learning</li>
   <li>Dataset_types_in_Machine_learning</li>
+  <li>EDA_techniques</li>
   <li>01_Classical_ML</li>
   <li>02_Deep_Learning</li>
   <li>03_Neural Operators</li>
