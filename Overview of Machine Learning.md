@@ -1,4 +1,4 @@
-# Machine Learning for Physics and Chemistry
+# Machine Learning for Scientific Applications
 
 ## 1. Why Machine Learning?
 
