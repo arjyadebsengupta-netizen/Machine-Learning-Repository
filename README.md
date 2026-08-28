@@ -33,6 +33,17 @@ A comprehensive repository covering classical machine learning algorithms, deep 
 |   |___07_GNN/
 └── 03_Neural_Operators/
     └── Neural_Operators/
+    └──
+    └──
+    └──
+    └──
+    └──
+    └──
+    └──
+    └──
+    └──
+    └──
+
 ```
 
 ---
