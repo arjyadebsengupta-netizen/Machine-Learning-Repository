@@ -10,6 +10,7 @@ The best order for reading is:
   <li>01_Classical_ML</li>
   <li>02_Deep_Learning</li>
   <li>03_Neural Operators</li>
+  <li>Transformer Variants</li>
 </ol>
 
 ## Repository Structure
@@ -111,6 +112,7 @@ The best order for reading is:
 | `Transolver` | **Transolver: A Fast Transformer Solver for PDEs on General Geometries** | Transformer-based PDE solver designed to efficiently learn physical fields on general geometries. |
 
 ---
+##Transformer Variants
 
 ## Environment & Requirements
 
