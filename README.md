@@ -138,7 +138,7 @@ Establishes the original Transformer as the mathematical and architectural basel
 
 Examines major variations of the fundamental Transformer architecture and the evolution of encoder, decoder, and encoder-decoder designs.
 
-**[📄 Transformer Variants — Part 2](Transformer_Variants_Part_2.pdf)**
+**[📄 Transformer Variants — Part 2](./Transformer%20Variants/Transformer_Variants_Part_2.pdf)**
 
 ---
 
@@ -146,7 +146,7 @@ Examines major variations of the fundamental Transformer architecture and the ev
 
 Examines how Transformer architectures are adapted to domains with inputs fundamentally different from conventional text, including structured, visual, temporal, and scientific data.
 
-**[📄 Transformer Variants — Part 3](Transformer_Variants_Part_3.pdf)**
+**[📄 Transformer Variants — Part 3](./Transformer%20Variants/Transformer_Variants_Part_3.pdf)**
 
 ---
 
@@ -154,7 +154,7 @@ Examines how Transformer architectures are adapted to domains with inputs fundam
 
 Focuses on modifications to the attention mechanism and positional representations, examining how these changes alter the underlying Transformer computation.
 
-**[📄 Transformer Variants — Part 4](Transformer_Variants_Part_4.pdf)**
+**[📄 Transformer Variants — Part 4](./Transformer%20Variants/Transformer_Variants_Part_4.pdf)**
 
 ---
 
@@ -162,7 +162,7 @@ Focuses on modifications to the attention mechanism and positional representatio
 
 Covers architectures designed to address the computational, memory, sparsity, retrieval, and long-context limitations of standard Transformer architectures.
 
-**[📄 Transformer Variants — Part 5](Transformer_Variants_Part_5.pdf)**
+**[📄 Transformer Variants — Part 5](./Transformer%20Variants/Transformer_Variants_Part_5.pdf)**
 
 ---
 
