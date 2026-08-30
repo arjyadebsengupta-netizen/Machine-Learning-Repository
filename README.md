@@ -53,7 +53,13 @@ The best order for reading is:
     └── MPNOT
     └── PINO
     └── Transolver
-
+Transformer Variants/
+│
+├── Transformer_Variants_Part_1.pdf
+├── Transformer_Variants_Part_2.pdf
+├── Transformer_Variants_Part_3.pdf
+├── Transformer_Variants_Part_4.pdf
+└── Transformer_Variants_Part_5.pdf
 ```
 
 ---
@@ -218,17 +224,6 @@ For each architecture, the documents examine:
 The detailed theory and mathematical development are contained in the
 five PDFs.
 
-##  Repository Structure
-
-```text
-Transformer Variants/
-│
-├── Transformer_Variants_Part_1.pdf
-├── Transformer_Variants_Part_2.pdf
-├── Transformer_Variants_Part_3.pdf
-├── Transformer_Variants_Part_4.pdf
-└── Transformer_Variants_Part_5.pdf
-```
 
 > **The PDFs contain the full technical treatment. This README serves as
 > the roadmap for the collection.**
