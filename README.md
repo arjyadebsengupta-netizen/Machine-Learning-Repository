@@ -112,7 +112,126 @@ The best order for reading is:
 | `Transolver` | **Transolver: A Fast Transformer Solver for PDEs on General Geometries** | Transformer-based PDE solver designed to efficiently learn physical fields on general geometries. |
 
 ---
-##Transformer Variants
+# Transformer Variants
+
+A five-part technical reference covering the evolution of **Transformer architectures and their major variants**.
+
+The collection focuses on the mathematical and architectural progression of each model: what the input is, what operations act on it, what changes relative to the baseline Transformer, why the modification was introduced, and where the architecture is used.
+
+##  Parts
+
+### Part 1 — Transformer Foundations
+
+Establishes the original Transformer as the mathematical and architectural baseline, developing the core components required to understand subsequent variants.
+
+**[📄 Transformer Variants — Part 1](Transformer_Variants_Part_1.pdf)**
+
+---
+
+### Part 2 — Core Transformer Variants
+
+Examines major variations of the fundamental Transformer architecture and the evolution of encoder, decoder, and encoder-decoder designs.
+
+**[📄 Transformer Variants — Part 2](Transformer_Variants_Part_2.pdf)**
+
+---
+
+### Part 3 — Domain-Specific Transformers
+
+Examines how Transformer architectures are adapted to domains with inputs fundamentally different from conventional text, including structured, visual, temporal, and scientific data.
+
+**[📄 Transformer Variants — Part 3](Transformer_Variants_Part_3.pdf)**
+
+---
+
+### Part 4 — Attention & Positional Variants
+
+Focuses on modifications to the attention mechanism and positional representations, examining how these changes alter the underlying Transformer computation.
+
+**[📄 Transformer Variants — Part 4](Transformer_Variants_Part_4.pdf)**
+
+---
+
+### Part 5 — Efficient, Sparse & Long-Context Transformers
+
+Covers architectures designed to address the computational, memory, sparsity, retrieval, and long-context limitations of standard Transformer architectures.
+
+**[📄 Transformer Variants — Part 5](Transformer_Variants_Part_5.pdf)**
+
+---
+
+##  Reading Order
+
+```text
+Part 1
+  │
+  ▼
+Transformer Foundations
+  │
+  ▼
+Part 2
+  │
+  ▼
+Core Transformer Variants
+  │
+  ▼
+Part 3
+  │
+  ▼
+Domain-Specific Transformers
+  │
+  ▼
+Part 4
+  │
+  ▼
+Attention & Positional Variants
+  │
+  ▼
+Part 5
+  │
+  ▼
+Efficient, Sparse & Long-Context Transformers
+```
+
+The five parts are designed to be read sequentially, with **Part 1
+establishing the baseline** against which the later architectural
+modifications can be understood.
+
+##  What the Documents Cover
+
+The collection approaches Transformer variants through their actual
+computational structure rather than treating them simply as a list of
+model names.
+
+For each architecture, the documents examine:
+
+- The nature and representation of the input
+- The mathematical operations applied to the representation
+- The sequence of transformations through the architecture
+- The modification relative to the baseline Transformer
+- The motivation behind the modification
+- Computational and architectural implications
+- Applications and areas of use
+- Relevant research literature
+- Implementation and code repositories
+
+The detailed theory and mathematical development are contained in the
+five PDFs.
+
+##  Repository Structure
+
+```text
+Transformer Variants/
+│
+├── Transformer_Variants_Part_1.pdf
+├── Transformer_Variants_Part_2.pdf
+├── Transformer_Variants_Part_3.pdf
+├── Transformer_Variants_Part_4.pdf
+└── Transformer_Variants_Part_5.pdf
+```
+
+> **The PDFs contain the full technical treatment. This README serves as
+> the roadmap for the collection.**
 
 ## Environment & Requirements
 
