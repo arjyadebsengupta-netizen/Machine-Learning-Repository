@@ -130,7 +130,7 @@ The collection focuses on the mathematical and architectural progression of each
 
 Establishes the original Transformer as the mathematical and architectural baseline, developing the core components required to understand subsequent variants.
 
-**[📄 Transformer Variants — Part 1](Transformer_Variants_Part_1.pdf)**
+**[📄 Transformer Variants — Part 1](./Transformer%20Variants/Transformer_Variants_Part_1.pdf)**
 
 ---
 
