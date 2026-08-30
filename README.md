@@ -1,7 +1,7 @@
 # Machine Learning, Deep Learning, and Neural Operators
 
 A comprehensive repository covering classical machine learning algorithms, deep learning architectures, and neural operators.
-The best order for reading is:
+The best order for theory reading is:
 
 <ol type="I">
   <li>Overview of Machine Learning</li>
@@ -12,14 +12,16 @@ The best order for reading is:
   <li>03_Neural Operators</li>
   <li>Transformer Variants</li>
 </ol>
+These files so far describe the code. The Physics Simulation Applications folder will explore more on how to combine the models to establish a digital twin. 
 
 ## Repository Structure
 
 ```text
 .
-├── 01_Classical_ML/
-│   ├── 01_Linear_Regression/
-│   ├── 02_Logistic_Regression/
+Theory                                                Applications
+├── 01_Classical_ML/                                   |──Physics Simulation Applications──|──Introduction.md
+│   ├── 01_Linear_Regression/                                                              |
+│   ├── 02_Logistic_Regression/                                                            |
 │   ├── 03_LDA/
 │   ├── 04_QDA/
 │   ├── 05_KNN/
@@ -59,7 +61,7 @@ Transformer Variants/
 ├── Transformer_Variants_Part_2.pdf
 ├── Transformer_Variants_Part_3.pdf
 ├── Transformer_Variants_Part_4.pdf
-└── Transformer_Variants_Part_5.pdf
+└── Transformer_Variants_Part_5.pdf         
 ```
 
 ---
