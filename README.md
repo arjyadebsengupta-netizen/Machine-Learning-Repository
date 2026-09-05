@@ -35,8 +35,8 @@ Physics Simulations                                Robotics
 .
 Theory                                                Applications
 ├── 01_Classical_ML/                                   |──Physics Simulation Applications──|──Introduction.md
-│   ├── 01_Linear_Regression/                                                              |
-│   ├── 02_Logistic_Regression/                                                            |
+│   ├── 01_Linear_Regression/                                                              |──Simulation_1──|──Theory.md
+│   ├── 02_Logistic_Regression/                                                                             |──Code.py
 │   ├── 03_LDA/
 │   ├── 04_QDA/
 │   ├── 05_KNN/
@@ -250,8 +250,16 @@ five PDFs.
 > **The PDFs contain the full technical treatment. This README serves as
 > the roadmap for the collection.**
 
+
+### Physics Simulations:
+Each folder denotes a separate simulation. For ease of understanding, with each folder, the material has been divided into 
+*Theory: The necessary physics theory and models used, as well as train-test setup is listed here. 
+*Code: This includes the python code.
+
+
 ### Reinforcement-Learning:
 We will be exploring applications of RL in robotics. All necessary materials will be provided in suitably designated folders. 
+
 
 
 
