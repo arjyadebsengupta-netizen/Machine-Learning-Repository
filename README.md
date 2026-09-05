@@ -252,10 +252,10 @@ five PDFs.
 
 
 ### Physics Simulations:
-Each folder denotes a separate simulation. For ease of understanding, with each folder, the material has been divided into 
-**Theory**- The necessary physics theory and models used, as well as train-test setup is listed here. 
-**Code**- This includes the python code.
+Each folder denotes a separate simulation. For ease of understanding, with each folder, the material has been divided into:
 
+**Theory** — The necessary physics theory and models used, as well as train-test setup is listed here.  
+**Code** — This includes the Python code.
 
 ### Reinforcement-Learning:
 We will be exploring applications of RL in robotics. All necessary materials will be provided in suitably designated folders. 
