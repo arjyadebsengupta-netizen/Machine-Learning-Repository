@@ -2,172 +2,534 @@
 
 ## Overview
 
-This project develops a physics-based neural-operator framework for learning the dynamics of a superconducting transmon system.
+This project develops a physics-based dataset and neural-operator framework for learning the dynamical response of a noisy superconducting transmon system.
 
-The central learning problem is the operator mapping
+The current implementation contains:
+
+- a full cosine transmon Hamiltonian in the charge basis,
+- numerical diagonalization into the lowest ten energy eigenstates,
+- finite-dimensional microwave control,
+- stochastic frequency, charge, amplitude, phase, drift, and TLS noise,
+- open-system Lindblad dynamics,
+- fourth-order Runge-Kutta time integration,
+- population-trajectory dataset generation,
+- training-only input standardization,
+- a PyTorch data pipeline,
+- a one-dimensional Fourier Neural Operator (FNO),
+- supervised FNO training,
+- relative $L^2$ evaluation,
+- and a discrete temporal $H^1$-type Sobolev error.
+
+The present repository state implements the **physics simulator and FNO baseline**.
+
+Graph Neural Operator (GNO) and CATO are intended as subsequent models in the neural-operator benchmark and are **not yet implemented in the current notebook**.
+
+---
+
+## Physical System
+
+The physical system is a single superconducting transmon.
+
+The transmon is represented using the full cosine Hamiltonian
 
 $$
-\mathcal{G}: u(t) \longmapsto \mathbf{P}(t),
+H_{\mathrm{tr}}
+=
+4E_C(\hat n-n_g)^2
+-
+E_J\cos(\hat\phi),
 $$
 
 where:
 
-* $u(t)$ is a time-dependent vector of effective Hamiltonian coefficients.
-* $\mathbf{P}(t)$ is the population vector of the lowest ten transmon energy levels.
+- $E_J$ is the Josephson energy,
+- $E_C$ is the charging energy,
+- $\hat n$ is the charge-number operator,
+- $\hat\phi$ is the superconducting phase operator,
+- $n_g$ is the offset charge.
 
-The data are generated directly from a numerical open-quantum-system simulation.
+The simulation uses the numerical charge basis
 
-The current implementation consists of two major components:
+$$
+n \in \{-n_{\mathrm{cut}},\ldots,n_{\mathrm{cut}}\}.
+$$
 
-1. A physics-based ten-level transmon simulator.
-2. A one-dimensional Fourier Neural Operator (FNO) trained to learn the resulting dynamical operator.
+With the current configuration,
 
-Additional neural-operator architectures will be added later for comparison.
+$$
+n_{\mathrm{cut}} = 50,
+$$
+
+giving a charge-basis dimension of
+
+$$
+N_{\mathrm{charge}} = 101.
+$$
+
+The Hamiltonian is constructed directly from the full cosine potential rather than from a truncated two-level qubit approximation.
 
 ---
 
-# 1. Physical Model
+## Energy Eigenbasis
 
-## 1.1 Superconducting Transmon
+The charge-basis Hamiltonian is numerically diagonalized.
 
-The physical system is a superconducting transmon described by the full cosine Hamiltonian
+If
 
 $$
-H_{\mathrm{charge}}
+H_{\mathrm{tr}} V = V E,
+$$
+
+then the eigenvectors contained in $V$ define the energy eigenbasis.
+
+Only the lowest ten eigenstates are retained:
+
+$$
+N_{\mathrm{levels}} = 10.
+$$
+
+The resulting finite-dimensional model therefore contains
+
+$$
+\left\{
+|0\rangle,
+|1\rangle,
+\ldots,
+|9\rangle
+\right\}.
+$$
+
+The ground-state energy is subtracted from all retained eigenenergies:
+
+$$
+E_j \leftarrow E_j-E_0.
+$$
+
+This produces the working ten-level Hamiltonian
+
+$$
+H_0
 =
-4E_C(\hat n-n_g)^2
--
-E_J\cos\hat\phi.
+\operatorname{diag}
+(E_0-E_0,E_1-E_0,\ldots,E_9-E_0).
 $$
 
-The simulation uses
+The retained ten-level representation allows population transfer outside the computational subspace to higher retained states to be represented by the simulator.
 
-$$
-E_J = 20.0\ \mathrm{GHz},
-$$
-
-$$
-E_C = 0.30\ \mathrm{GHz},
-$$
-
-and
-
-$$
-n_g = 0.
-$$
-
-The Hamiltonian is constructed directly in the charge basis.
-
-The charge basis is truncated at
-
-$$
-n_{\mathrm{cut}}=50,
-$$
-
-giving
-
-$$
-2n_{\mathrm{cut}}+1=101
-$$
-
-charge states.
-
-The resulting $101\times101$ Hamiltonian is numerically diagonalized.
-
-The lowest ten eigenstates are retained for the subsequent dynamical simulation.
+The lowest transition frequencies are also extracted from the diagonalized spectrum, including the $0\rightarrow1$ and $1\rightarrow2$ transitions and the corresponding anharmonicity.
 
 ---
 
-# 2. Energy Eigenbasis
+## Effective Hamiltonian Representation
 
-The charge-basis Hamiltonian is diagonalized as
+The dynamical model is written in terms of a fixed set of effective Hamiltonian operators.
 
-$$
-H_{\mathrm{charge}}V
-=
-V\operatorname{diag}(E_0,E_1,\ldots).
-$$
-
-The retained energies are shifted such that
+The Hamiltonian used by the simulator has the form
 
 $$
-E_0=0.
-$$
-
-The transition frequency between the first two levels is
-
-$$
-f_{01}=E_1-E_0.
-$$
-
-The next transition frequency is
-
-$$
-f_{12}=E_2-E_1.
-$$
-
-The anharmonicity is calculated as
-
-$$
-\alpha
-=
-f_{12}-f_{01}.
-$$
-
-The charge operator is transformed into the retained energy eigenbasis according to
-
-$$
-\hat n_{\mathrm{eig}}
-=
-V^\dagger \hat n V.
-$$
-
-All subsequent ten-level dynamics are performed in this eigenbasis.
-
----
-
-# 3. Effective Hamiltonian Representation
-
-The dynamical Hamiltonian is represented using a four-channel effective coefficient description.
-
-The operator-learning input is
-
-$$
-u(t)
-=
-\begin{bmatrix}
-u_{\mathrm{frequency}}(t)\\
-u_I(t)\\
-u_Q(t)\\
-u_{\mathrm{charge}}(t)
-\end{bmatrix}.
-$$
-
-The corresponding effective Hamiltonian is
-
-$$
-H_{\mathrm{eff}}(t)
+H(t)
 =
 H_0
 +
-u_{\mathrm{frequency}}(t)H_{\mathrm{frequency}}
+u_f(t)H_f
 +
 u_I(t)H_I
 +
 u_Q(t)H_Q
 +
-u_{\mathrm{charge}}(t)H_{\mathrm{charge}}.
+u_c(t)H_c.
 $$
 
-Therefore, the machine-learning input contains
+The four time-dependent input channels are
 
 $$
-\boxed{4}
+u(t)
+=
+\begin{bmatrix}
+u_f(t)\\
+u_I(t)\\
+u_Q(t)\\
+u_c(t)
+\end{bmatrix}.
 $$
 
-channels.
+They correspond to:
 
-The output contains the populations of the ten retained levels,
+| Channel | Symbol | Description |
+|---|---|---|
+| Frequency | $u_f(t)$ | Frequency-noise, drift, and TLS contribution |
+| In-phase | $u_I(t)$ | Microwave in-phase control |
+| Quadrature | $u_Q(t)$ | Microwave quadrature control |
+| Charge | $u_c(t)$ | Charge-noise contribution |
+
+The effective operator basis is constructed numerically in the ten-level energy eigenbasis.
+
+### Frequency operator
+
+The current implementation uses
+
+$$
+H_f
+=
+\operatorname{diag}(0,1,\ldots,9)
+$$
+
+as the effective frequency-perturbation basis.
+
+This is a parameterized operator basis for the frequency channel; it is distinct from the physical static Hamiltonian $H_0$ containing the numerically calculated transmon eigenenergies.
+
+### Charge operator
+
+The charge operator is transformed from the charge basis into the retained energy eigenbasis.
+
+The charge-noise Hamiltonian is constructed from the corresponding transformed charge operator.
+
+### Microwave operators
+
+A raising-like component of the transformed charge operator is used to construct Hermitian in-phase and quadrature control operators.
+
+The current implementation uses
+
+$$
+H_I
+=
+n_+ + n_+^\dagger
+$$
+
+and
+
+$$
+H_Q
+=
+i(n_+-n_+^\dagger).
+$$
+
+Both operators are Hermitian.
+
+---
+
+## Microwave I/Q Control
+
+The microwave control consists of two channels:
+
+$$
+u_I(t)
+$$
+
+and
+
+$$
+u_Q(t).
+$$
+
+The controls are generated as smooth random trajectories.
+
+The current trajectory construction uses randomly sampled coarse control points followed by interpolation onto the simulation time grid.
+
+The configured maximum control scale is
+
+$$
+u_{\max}=0.100\ \mathrm{GHz}.
+$$
+
+A control-bandwidth parameter is also defined in the configuration.
+
+The current implementation generates smooth control trajectories through interpolation; it does not explicitly apply a separate numerical low-pass filter.
+
+The resulting microwave contribution to the Hamiltonian is
+
+$$
+H_{\mathrm{control}}(t)
+=
+u_I(t)H_I
++
+u_Q(t)H_Q.
+$$
+
+---
+
+## Stochastic Noise Model
+
+The simulator contains several stochastic effects.
+
+The implemented input trajectories include:
+
+1. frequency noise,
+2. slow frequency drift,
+3. TLS telegraph fluctuations,
+4. charge noise,
+5. microwave amplitude noise,
+6. microwave phase noise.
+
+These effects enter the effective Hamiltonian through the four input channels.
+
+### Frequency noise
+
+The frequency channel contains a slowly varying stochastic component.
+
+The implementation generates this component using an autoregressive-style update rather than explicitly synthesizing a frequency-domain $1/f$ spectrum.
+
+The configuration contains parameters associated with the intended frequency-noise model, including low-frequency, knee, and high-frequency scales.
+
+### Frequency drift
+
+A slowly varying frequency drift contribution is included.
+
+The configured drift scale is
+
+$$
+\sigma_{\mathrm{drift}}
+=
+50\times10^{-6}\ \mathrm{GHz}.
+$$
+
+### TLS telegraph fluctuations
+
+A two-state telegraph process is used to represent slow TLS-induced frequency shifts.
+
+The configured TLS shift is
+
+$$
+\Delta f_{\mathrm{TLS}}
+=
+500\times10^{-6}\ \mathrm{GHz}.
+$$
+
+### Charge noise
+
+Charge fluctuations enter through the charge channel.
+
+The configured charge-noise scale is
+
+$$
+\sigma_{\mathrm{charge}}
+=
+2\times10^{-3}.
+$$
+
+### Microwave amplitude noise
+
+Amplitude noise is applied to the complex microwave control.
+
+The configured amplitude-noise scale is
+
+$$
+\sigma_{\mathrm{amp}}
+=
+10^{-4}.
+$$
+
+### Microwave phase noise
+
+Phase noise is also applied to the complex microwave control.
+
+The configured phase-noise scale is
+
+$$
+\sigma_{\mathrm{phase}}
+=
+10^{-3}\ \mathrm{rad}.
+$$
+
+---
+
+## Open-System Dynamics
+
+The system is treated as an open quantum system.
+
+The density matrix $\rho(t)$ evolves according to the Lindblad master equation
+
+$$
+\frac{d\rho}{dt}
+=
+-i[H(t),\rho]
++
+\sum_k
+\mathcal{D}[L_k]\rho,
+$$
+
+with dissipator
+
+$$
+\mathcal{D}[L]\rho
+=
+L\rho L^\dagger
+-
+\frac{1}{2}
+\left(
+L^\dagger L\rho
++
+\rho L^\dagger L
+\right).
+$$
+
+The Hamiltonian and dissipative contributions are evaluated directly in the retained ten-level eigenbasis.
+
+Because the Hamiltonian coefficients are specified in GHz while the time axis is represented in ns, the Hamiltonian contribution in the implementation uses the corresponding $2\pi$ conversion.
+
+---
+
+## Relaxation and Dephasing
+
+The simulator includes relaxation and dephasing channels.
+
+The configured relaxation time is
+
+$$
+T_1=30\ \mu\mathrm{s},
+$$
+
+and the configured coherence time is
+
+$$
+T_2=20\ \mu\mathrm{s}.
+$$
+
+They are converted to ns internally:
+
+$$
+T_1=30000\ \mathrm{ns},
+$$
+
+$$
+T_2=20000\ \mathrm{ns}.
+$$
+
+The corresponding rates are
+
+$$
+\gamma_1=\frac{1}{T_1},
+$$
+
+and
+
+$$
+\gamma_2=\frac{1}{T_2}.
+$$
+
+The pure-dephasing contribution is calculated as
+
+$$
+\gamma_\phi
+=
+\gamma_2-\frac{\gamma_1}{2}.
+$$
+
+### Relaxation operators
+
+Successive retained levels are connected through relaxation operators
+
+$$
+L_j
+=
+\sqrt{\gamma_1}
+|j-1\rangle\langle j|,
+\qquad
+j=1,\ldots,9.
+$$
+
+The current implementation therefore uses the configured relaxation rate for the successive-level relaxation channels.
+
+### Dephasing operator
+
+A diagonal dephasing operator based on the retained level index is also included.
+
+The implementation uses the diagonal structure
+
+$$
+L_\phi
+\propto
+\operatorname{diag}(0,1,\ldots,9).
+$$
+
+---
+
+## Numerical Time Evolution
+
+The full physical simulation uses two time scales.
+
+The operator-learning time grid is
+
+$$
+t\in[0,200]\ \mathrm{ns}
+$$
+
+with
+
+$$
+\Delta t_{\mathrm{operator}}=2\ \mathrm{ns}.
+$$
+
+Therefore,
+
+$$
+N_t=101.
+$$
+
+For each operator-level interval, the physical density-matrix evolution is resolved using an internal time step of
+
+$$
+\Delta t_{\mathrm{internal}}
+=
+0.05\ \mathrm{ns}.
+$$
+
+Thus each 2 ns operator interval contains
+
+$$
+\frac{2}{0.05}=40
+$$
+
+internal integration steps.
+
+The density matrix is propagated using fourth-order Runge-Kutta integration.
+
+For a state $\rho_n$,
+
+$$
+k_1=f(t_n,\rho_n),
+$$
+
+$$
+k_2=f\left(t_n+\frac{\Delta t}{2},
+\rho_n+\frac{\Delta t}{2}k_1\right),
+$$
+
+$$
+k_3=f\left(t_n+\frac{\Delta t}{2},
+\rho_n+\frac{\Delta t}{2}k_2\right),
+$$
+
+$$
+k_4=f(t_n+\Delta t,\rho_n+\Delta t\,k_3),
+$$
+
+and
+
+$$
+\rho_{n+1}
+=
+\rho_n
++
+\frac{\Delta t}{6}
+(k_1+2k_2+2k_3+k_4).
+$$
+
+---
+
+## Population Extraction
+
+The machine-learning target is the population trajectory of the ten retained energy levels.
+
+For each time point,
+
+$$
+P_j(t)
+=
+\langle j|\rho(t)|j\rangle.
+$$
+
+The resulting population vector is
 
 $$
 \mathbf{P}(t)
@@ -180,331 +542,133 @@ P_9(t)
 \end{bmatrix}.
 $$
 
-Thus,
-
-$$
-\boxed{10}
-$$
-
-output channels are used.
-
----
-
-# 4. Microwave I/Q Control
-
-The microwave control is represented by in-phase and quadrature components,
-
-$$
-\Omega(t)=I(t)+iQ(t).
-$$
-
-The maximum I/Q amplitude is
-
-$$
-0.100\ \mathrm{GHz}.
-$$
-
-The control trajectories are generated from randomly sampled coarse control points and interpolated onto the simulation time grid.
-
-This produces smooth time-dependent control functions rather than independently sampled values at every time step.
-
-Amplitude noise and phase noise are subsequently applied to the complex microwave control.
-
-The noisy control is
-
-$$
-\Omega_{\mathrm{noisy}}(t)
-=
-\Omega(t)
-\left[1+\epsilon_A(t)\right]
-e^{i\epsilon_\phi(t)}.
-$$
-
-The resulting real and imaginary components are used as the noisy I/Q controls.
-
----
-
-# 5. Noise Model
-
-The simulator includes several stochastic effects.
-
-## 5.1 Frequency Noise
-
-A slowly varying frequency-noise process is included with RMS scale
-
-$$
-10^{-4}\ \mathrm{GHz}.
-$$
-
-The configured frequency range is
-
-$$
-f_{\min}=1\ \mathrm{Hz},
-$$
-
-$$
-f_{\mathrm{knee}}=10^7\ \mathrm{Hz},
-$$
-
-and
-
-$$
-f_{\max}=2\times10^9\ \mathrm{Hz}.
-$$
-
-## 5.2 Charge Noise
-
-Charge noise is included with amplitude
-
-$$
-2\times10^{-3}.
-$$
-
-This enters the effective Hamiltonian through the charge-noise operator.
-
-## 5.3 Microwave Amplitude Noise
-
-The microwave amplitude noise has standard deviation
-
-$$
-\sigma_A=10^{-4}.
-$$
-
-## 5.4 Microwave Phase Noise
-
-The microwave phase noise has standard deviation
-
-$$
-\sigma_\phi=10^{-3}\ \mathrm{rad}.
-$$
-
-## 5.5 Frequency Drift
-
-A slowly varying frequency drift is included with scale
-
-$$
-\sigma_{\mathrm{drift}}
-=
-50\times10^{-6}\ \mathrm{GHz}.
-$$
-
-## 5.6 TLS Telegraph Switching
-
-A two-level-system telegraph process is included.
-
-The TLS switches between two states and produces a frequency shift with magnitude
-
-$$
-500\times10^{-6}\ \mathrm{GHz}.
-$$
-
----
-
-# 6. Open-System Quantum Dynamics
-
-The transmon is treated as an open quantum system.
-
-The density matrix evolves according to the Lindblad master equation
-
-$$
-\frac{d\rho}{dt}
-=
--i[H(t),\rho]
-+
-\sum_k
-\left(
-L_k\rho L_k^\dagger
--
-\frac{1}{2}
-\left\{
-L_k^\dagger L_k,\rho
-\right\}
-\right).
-$$
-
-The implementation uses the appropriate $2\pi$ conversion for frequencies expressed in GHz.
-
-The initial state is the ground state,
-
-$$
-\rho(0)
-=
-|0\rangle\langle0|.
-$$
-
----
-
-# 7. Relaxation and Dephasing
-
-The relaxation and coherence times are
-
-$$
-T_1=30\ \mu\mathrm{s},
-$$
-
-and
-
-$$
-T_2=20\ \mu\mathrm{s}.
-$$
-
-The corresponding rates are
-
-$$
-\Gamma_1=\frac{1}{T_1},
-$$
-
-$$
-\Gamma_2=\frac{1}{T_2},
-$$
-
-and
-
-$$
-\Gamma_\phi
-=
-\Gamma_2-\frac{1}{2}\Gamma_1.
-$$
-
-The simulator includes relaxation channels connecting successive retained levels,
-
-$$
-|j\rangle\rightarrow|j-1\rangle,
-$$
-
-together with a dephasing channel.
-
----
-
-# 8. Numerical Integration
-
-The environment time step is
-
-$$
-\Delta t_{\mathrm{env}}
-=
-2.0\ \mathrm{ns}.
-$$
-
-The internal integration time step is
-
-$$
-\Delta t_{\mathrm{internal}}
-=
-0.05\ \mathrm{ns}.
-$$
-
-The total simulation time is
-
-$$
-T=200\ \mathrm{ns}.
-$$
-
-The neural-operator time step is
-
-$$
-\Delta t_{\mathrm{operator}}
-=
-2.0\ \mathrm{ns}.
-$$
-
-Therefore, the operator-learning time grid is
-
-$$
-t=0,2,4,\ldots,200\ \mathrm{ns},
-$$
-
-with
-
-$$
-\boxed{101}
-$$
-
-temporal points.
-
-The density matrix is propagated using a fourth-order Runge--Kutta scheme.
-
----
-
-# 9. Population Extraction
-
-At each operator-learning time point, the ten populations are extracted from the density matrix,
-
-$$
-P_j(t)=\rho_{jj}(t).
-$$
-
-The resulting population vector is
-
-$$
-\mathbf{P}(t)
-=
-[P_0(t),P_1(t),\ldots,P_9(t)].
-$$
-
-The populations are constrained numerically to remain non-negative and are normalized so that
+The populations are clipped to remove numerical negative values and renormalized so that
 
 $$
 \sum_{j=0}^{9}P_j(t)=1.
 $$
 
+Therefore the dataset output has ten channels:
+
+$$
+\mathbf{P}(t)\in\mathbb{R}^{10}.
+$$
+
 ---
 
-# 10. Operator-Learning Dataset
+## Operator-Learning Problem
 
-The physics simulator generates pairs of input and output trajectories,
+The physical simulator defines a mapping from a time-dependent input function to a time-dependent output function.
 
-$$
-\left(
-u^{(i)}(t),
-\mathbf{P}^{(i)}(t)
-\right).
-$$
-
-The learned operator is therefore
+The operator-learning problem is
 
 $$
-\boxed{
-\mathcal{G}:u(t)\rightarrow\mathbf{P}(t).
-}
+\mathcal{G}:u(t)\mapsto\mathbf{P}(t).
 $$
 
-The input tensor has the form
+The input is
+
+$$
+u(t)\in\mathbb{R}^{4},
+$$
+
+with four channels:
+
+$$
+u(t)
+=
+[u_f(t),u_I(t),u_Q(t),u_c(t)].
+$$
+
+The output is
+
+$$
+\mathbf{P}(t)\in\mathbb{R}^{10}.
+$$
+
+For the discretized dataset,
+
+$$
+U\in\mathbb{R}^{4\times101},
+$$
+
+and
+
+$$
+Y\in\mathbb{R}^{10\times101}.
+$$
+
+With a batch dimension, the tensors are represented as
 
 $$
 U\in\mathbb{R}^{B\times4\times101},
 $$
 
-while the output tensor has the form
+and
 
 $$
 Y\in\mathbb{R}^{B\times10\times101}.
 $$
 
-The tensor convention is
+The neural operator therefore learns
 
-```text
-[B, C, N]
-```
-
-where:
-
-* `B` is the batch dimension.
-* `C` is the channel dimension.
-* `N` is the temporal dimension.
+$$
+\mathcal{G}_\theta:
+\mathbb{R}^{4\times101}
+\rightarrow
+\mathbb{R}^{10\times101}.
+$$
 
 ---
 
-# 11. Data Preprocessing
+## Dataset Generation
 
-The input channels are standardized using statistics computed exclusively from the training dataset.
+Each trajectory is generated independently from a random seed.
 
-For each channel $c$,
+For every sample:
+
+1. smooth microwave control trajectories are generated,
+2. stochastic noise trajectories are generated,
+3. the four effective Hamiltonian coefficients are assembled,
+4. the initial density matrix is prepared in the ground state,
+5. the density matrix is propagated through the physical simulator,
+6. the ten level populations are extracted,
+7. the input and output trajectories are stored.
+
+The resulting dataset has the structure
+
+```text
+U_train : [N_train, 4, 101]
+Y_train : [N_train, 10, 101]
+
+U_test  : [N_test, 4, 101]
+Y_test  : [N_test, 10, 101]
+```
+
+The active sample counts are controlled through the project `CONFIG` dictionary.
+
+The train and test trajectories are generated using independent random seeds.
+
+The implementation also checks that:
+
+- all generated values are finite,
+- population sums remain normalized,
+- the training and test trajectories are not identical.
+
+---
+
+## Input Standardization
+
+Only the input channels are standardized.
+
+The training-set mean and standard deviation are calculated independently for each of the four input channels.
+
+For an input channel $c$,
 
 $$
 \mu_c
 =
-\operatorname{mean}(U_c),
+\operatorname{mean}(U_{\mathrm{train},c}),
 $$
 
 and
@@ -512,174 +676,243 @@ and
 $$
 \sigma_c
 =
-\operatorname{std}(U_c).
+\operatorname{std}(U_{\mathrm{train},c}).
 $$
 
 The standardized input is
 
 $$
-\widetilde U_c
+\widetilde{U}_c
 =
 \frac{U_c-\mu_c}{\sigma_c}.
 $$
 
-The training-set statistics are also used to transform the test inputs.
+A small numerical floor is applied to the standard deviation to prevent division by zero.
+
+The test inputs are transformed using the **training-set** statistics:
+
+$$
+\widetilde{U}_{\mathrm{test},c}
+=
+\frac{U_{\mathrm{test},c}-\mu_c}{\sigma_c}.
+$$
 
 No test-set statistics are used during preprocessing.
 
-The population outputs are left unchanged.
+The population targets are not standardized.
 
 ---
 
-# 12. PyTorch Data Pipeline
+## PyTorch Dataset Representation
 
-The processed data are converted to PyTorch tensors.
+The standardized arrays are converted to PyTorch tensors using `float32`.
 
-The current batch size is
-
-$$
-\boxed{8}.
-$$
-
-The resulting data representation is
+The dataset returns:
 
 ```text
-Input:
-[B, 4, 101]
-
-Output:
-[B, 10, 101]
+input  -> [4, 101]
+target -> [10, 101]
 ```
 
-The training and test sets are provided through PyTorch `Dataset` and `DataLoader` objects.
+A batch produced by the `DataLoader` therefore has the shape
+
+```text
+input  -> [B, 4, 101]
+target -> [B, 10, 101]
+```
+
+The training loader uses shuffling, while the test loader does not.
+
+The configured batch size is
+
+$$
+B=8.
+$$
 
 ---
 
-# 13. Fourier Neural Operator
+## Fourier Neural Operator
 
 The first neural operator implemented in the project is a one-dimensional Fourier Neural Operator.
 
-The FNO operates along the temporal dimension.
+The FNO operates directly on the temporal coordinate.
 
-For an intermediate feature representation
-
-$$
-x\in\mathbb{R}^{B\times C\times N},
-$$
-
-the temporal dimension is transformed into Fourier space,
+The input is
 
 $$
-\hat{x}
+U\in\mathbb{R}^{B\times4\times101},
+$$
+
+and the output is
+
+$$
+\widehat{Y}\in\mathbb{R}^{B\times10\times101}.
+$$
+
+No additional time-coordinate channel is appended to the four physical input channels.
+
+---
+
+## Spectral Convolution
+
+The FNO uses a one-dimensional Fourier spectral convolution.
+
+For an input $x(t)$, the discrete Fourier transform is computed as
+
+$$
+\widehat{x}(k)
 =
-\mathcal{F}(x).
+\mathcal{F}[x](k).
 $$
 
-A finite number of Fourier modes are retained.
+Only a fixed number of low-frequency Fourier modes are retained.
 
-The spectral convolution applies learned complex-valued weights,
+The spectral convolution applies a learned complex-valued weight to these modes:
 
 $$
-\hat{y}_k
+\widehat{y}(k)
 =
-W_k\hat{x}_k.
+W(k)\widehat{x}(k).
 $$
 
-The transformed representation is then returned to physical space using
+The transformed representation is then mapped back to physical space using the inverse Fourier transform:
 
 $$
-y
+y(t)
 =
-\mathcal{F}^{-1}(\hat{y}).
+\mathcal{F}^{-1}[\widehat{y}](t).
+$$
+
+The current implementation uses
+
+$$
+N_{\mathrm{modes}}=16
+$$
+
+and a hidden width of
+
+$$
+W=32.
 $$
 
 ---
 
-# 14. FNO Architecture
+## FNO Architecture
 
 The current FNO consists of:
 
-* An input $1\times1$ convolution.
-* Four spectral convolution layers.
-* Four pointwise $1\times1$ convolution layers.
-* GELU nonlinearities.
-* A two-stage output projection.
+1. an input projection from four channels to 32 channels,
+2. four spectral-convolution layers,
+3. four pointwise convolution layers,
+4. GELU nonlinearities,
+5. an output projection from 32 hidden channels to ten population channels.
 
-The input dimension is
+Each FNO block combines the spectral convolution and pointwise convolution contributions before applying the GELU activation.
 
-$$
-4.
-$$
+The architecture can be summarized as
 
-The hidden width is
+```text
+Input
+  [B, 4, 101]
+       |
+       v
+Input projection
+  [B, 32, 101]
+       |
+       v
++-------------------------+
+| Spectral Conv 1d        |
+| Pointwise Conv 1d       |
+| GELU                    |
++-------------------------+
+       |
+       v
++-------------------------+
+| Spectral Conv 1d        |
+| Pointwise Conv 1d       |
+| GELU                    |
++-------------------------+
+       |
+       v
++-------------------------+
+| Spectral Conv 1d        |
+| Pointwise Conv 1d       |
+| GELU                    |
++-------------------------+
+       |
+       v
++-------------------------+
+| Spectral Conv 1d        |
+| Pointwise Conv 1d       |
+| GELU                    |
++-------------------------+
+       |
+       v
+Output projection
+  [B, 10, 101]
+```
 
-$$
-32.
-$$
-
-The number of retained Fourier modes is
-
-$$
-16.
-$$
-
-The final output dimension is
-
-$$
-10.
-$$
-
-The complete mapping is therefore
-
-$$
-[B,4,101]
-\longrightarrow
-[B,10,101].
-$$
+The FNO is implemented directly in PyTorch.
 
 ---
 
-# 15. FNO Training
+## FNO Training
 
-The FNO is trained using mean-squared error.
+The training objective is the mean-squared error between predicted and simulated population trajectories.
 
-The loss function is
+The loss is
 
 $$
 \mathcal{L}_{\mathrm{MSE}}
 =
-\frac{1}{B10N}
-\sum_{b,j,t}
+\frac{1}{N}
+\sum
 \left(
-\widehat{P}_{j}^{(b)}(t)
--
-P_{j}^{(b)}(t)
+\widehat{Y}-Y
 \right)^2.
 $$
 
 The optimizer is Adam with learning rate
 
 $$
-\boxed{10^{-3}}.
+\eta=10^{-3}.
 $$
 
-The batch size is
+The number of training epochs is controlled through
 
-$$
-\boxed{8}.
-$$
+```python
+CONFIG["epochs"]
+```
 
-The number of epochs is controlled by the active experiment configuration.
+The current implementation records the mean training loss for every epoch.
+
+Training also records the elapsed time for each epoch and the total training time.
 
 ---
 
-# 16. FNO Evaluation
+## Evaluation Metrics
 
-The trained FNO is evaluated on the held-out test trajectories.
+The current implementation evaluates the FNO using:
 
-Two primary metrics are used.
+1. test-set MSE,
+2. relative $L^2$ error,
+3. relative temporal $H^1$-type error.
 
-## 16.1 Relative $L^2$ Error
+### Test MSE
+
+The test mean-squared error is
+
+$$
+\mathcal{L}_{\mathrm{test}}
+=
+\frac{1}{N}
+\sum
+\left(
+\widehat{Y}-Y
+\right)^2.
+$$
+
+### Relative $L^2$ Error
 
 For each test trajectory,
 
@@ -687,264 +920,416 @@ $$
 \epsilon_{L^2}
 =
 \frac{
-\left\|
-\widehat{\mathbf{P}}
--
-\mathbf{P}
-\right\|_2
+\|\widehat{Y}-Y\|_2
 }{
-\left\|
-\mathbf{P}
-\right\|_2
+\|Y\|_2
 }.
 $$
 
-The reported Relative $L^2$ error is averaged over the test set.
+The reported metric is the mean of this quantity over the test samples.
 
-## 16.2 Relative Temporal $H^1$ Error
+### Temporal $H^1$-Type Error
 
-Temporal derivatives are calculated using finite differences.
+The temporal derivative is approximated numerically using finite differences on the operator time grid.
 
-For interior points,
+For a trajectory $Y(t)$,
 
 $$
-\frac{dP}{dt}
-\approx
-\frac{
-P(t+\Delta t)-P(t-\Delta t)
-}{
-2\Delta t
-}.
+\partial_tY(t)
 $$
 
-A forward difference is used at the initial point and a backward difference at the final point.
+is approximated using centered differences in the interior and one-sided differences at the endpoints.
 
-The temporal $H^1$ error combines the population error and the temporal-derivative error:
+The temporal $H^1$-type norm is then represented by
+
+$$
+\|Y\|_{H^1_t}^2
+=
+\|Y\|_2^2
++
+\|\partial_tY\|_2^2.
+$$
+
+The relative temporal error is
 
 $$
 \epsilon_{H^1}
 =
 \frac{
 \sqrt{
-\|\widehat{\mathbf{P}}-\mathbf{P}\|_2^2
+\|\widehat{Y}-Y\|_2^2
 +
-\|\partial_t\widehat{\mathbf{P}}
+\|\partial_t\widehat{Y}
 -
-\partial_t\mathbf{P}\|_2^2
+\partial_tY\|_2^2
 }
 }{
 \sqrt{
-\|\mathbf{P}\|_2^2
+\|Y\|_2^2
 +
-\|\partial_t\mathbf{P}\|_2^2
+\|\partial_tY\|_2^2
 }
 }.
 $$
 
-This metric evaluates both population accuracy and the ability of the neural operator to reproduce temporal dynamics.
+The current implementation evaluates this quantity on the discretized temporal grid.
 
 ---
 
-# 17. Current Pipeline
+## Current Computational Pipeline
 
-The current implementation follows the pipeline
+The implemented pipeline is:
 
 ```text
 Full cosine transmon Hamiltonian
               |
               v
-       Charge-basis model
+Charge-basis numerical diagonalization
               |
               v
-    Numerical diagonalization
+Lowest 10 energy eigenstates
               |
               v
-      Lowest 10 eigenstates
+Effective Hamiltonian operator basis
               |
               v
-   Effective Hamiltonian basis
+Smooth I/Q controls + stochastic noise
               |
               v
-       Control + noise
+Four-channel Hamiltonian trajectory
               |
               v
-    Lindblad master equation
+Lindblad master equation
               |
               v
-       RK4 time evolution
+RK4 density-matrix evolution
               |
               v
-    10 population trajectories
+Ten-level population trajectory
               |
               v
-       Dataset generation
+Physics-generated dataset
               |
               v
-   Training-only standardization
+Training-only input standardization
               |
               v
-       PyTorch DataLoader
+PyTorch DataLoader
               |
               v
-      Fourier Neural Operator
+Fourier Neural Operator
               |
               v
-     Predicted population
-          trajectories
+Predicted ten-level populations
+              |
+              v
+MSE + Relative L2 + Temporal H1-type error
 ```
 
 ---
 
-# 18. Current Implementation Status
+## Current Implementation Status
 
-| Component                          | Status      |
-| ---------------------------------- | ----------- |
-| Full cosine transmon Hamiltonian   | Implemented |
-| Charge-basis representation        | Implemented |
-| Numerical diagonalization          | Implemented |
-| Ten-level truncation               | Implemented |
-| I/Q control generation             | Implemented |
-| Frequency noise                    | Implemented |
-| Charge noise                       | Implemented |
-| Microwave amplitude noise          | Implemented |
-| Microwave phase noise              | Implemented |
-| Frequency drift                    | Implemented |
-| TLS telegraph switching            | Implemented |
-| Lindblad relaxation                | Implemented |
-| Lindblad dephasing                 | Implemented |
-| RK4 density-matrix evolution       | Implemented |
-| Population trajectory generation   | Implemented |
-| Operator-learning dataset          | Implemented |
-| Channelwise input standardization  | Implemented |
-| PyTorch dataset pipeline           | Implemented |
-| Fourier spectral convolution       | Implemented |
-| One-dimensional FNO                | Implemented |
-| FNO training                       | Implemented |
-| Relative $L^2$ evaluation          | Implemented |
-| Relative temporal $H^1$ evaluation | Implemented |
-| GNO                                | Planned     |
-| CATO                               | Planned     |
-| Final multi-model benchmark        | Planned     |
+### Implemented
+
+- [x] Full cosine transmon Hamiltonian
+- [x] Charge-basis construction
+- [x] Numerical diagonalization
+- [x] Ten-level energy eigenbasis
+- [x] Effective frequency operator
+- [x] Microwave I/Q control operators
+- [x] Charge-noise operator
+- [x] Frequency noise
+- [x] Charge noise
+- [x] Amplitude noise
+- [x] Phase noise
+- [x] Slow frequency drift
+- [x] TLS telegraph fluctuations
+- [x] Lindblad relaxation
+- [x] Lindblad dephasing
+- [x] RK4 density-matrix evolution
+- [x] Population extraction
+- [x] Physics-based dataset generation
+- [x] Training-only input standardization
+- [x] PyTorch dataset and DataLoader
+- [x] One-dimensional spectral convolution
+- [x] Fourier Neural Operator
+- [x] FNO training
+- [x] Test-set evaluation
+- [x] Relative $L^2$ metric
+- [x] Temporal $H^1$-type metric
+
+### Planned
+
+- [ ] Graph Neural Operator (GNO)
+- [ ] CATO
+- [ ] Common benchmark across FNO, GNO, and CATO
+- [ ] Multi-seed statistical evaluation
+- [ ] Extended operator-learning experiments
 
 ---
 
-# 19. Current Notebook Structure
+## Notebook Structure
 
-The current implementation is organized as follows:
+The current notebook is organized as a sequential physics-to-machine-learning pipeline.
+
+| Cell | Component |
+|---:|---|
+| 1 | Imports |
+| 2 | Configuration and simulation parameters |
+| 3 | Charge-basis transmon Hamiltonian and numerical diagonalization |
+| 4 | Initial control-operator construction |
+| 5 | Noise, control, and open-system parameters |
+| 6 | Random state and trajectory initialization |
+| 7 | Relaxation and dephasing operators |
+| 8 | Final effective Hamiltonian operator basis |
+| 9 | Hamiltonian construction and Lindblad dynamics |
+| 10 | Control/noise trajectory generation and single-trajectory simulation |
+| 11 | Dataset generation |
+| 12 | Training-only input standardization |
+| 13 | PyTorch Dataset and DataLoader |
+| 14 | One-dimensional spectral convolution |
+| 15 | Fourier Neural Operator |
+| 16 | Loss and optimizer |
+| 17 | FNO training |
+| 18 | FNO test evaluation |
+| 19 | Temporal $H^1$-type evaluation |
+| 20 | Training/evaluation visualization and summary |
+| 21 | Current end-to-end FNO result state |
+
+Cell 8 defines the effective operator basis used by the subsequent physical simulation and dataset generation.
+
+---
+
+## Reproducibility
+
+The experiment uses explicit random seeds.
+
+The current experiment seed is
 
 ```text
-Cell 1   — Imports
-Cell 2   — Global configuration
-Cell 3   — Transmon Hamiltonian and eigenbasis
-Cell 4   — Control operators
-Cell 5   — Noise and control parameters
-Cell 6   — Control and noise state
-Cell 7   — Dissipation and Lindblad operators
-Cell 8   — Effective Hamiltonian representation
-Cell 9   — Hamiltonian and Lindblad evolution
-Cell 10  — Single trajectory generation
-Cell 11  — Dataset generation
-Cell 12  — Channelwise standardization
-Cell 13  — PyTorch datasets and dataloaders
-Cell 14  — Fourier spectral convolution
-Cell 15  — Complete FNO model
-Cell 16  — FNO training setup
-Cell 17  — FNO training
-Cell 18  — FNO test evaluation
-Cell 19  — Relative temporal H1 evaluation
-Cell 20  — FNO training/evaluation summary
-```
-
----
-
-# 20. Reproducibility
-
-The implementation uses:
-
-* Python
-* NumPy
-* SciPy
-* PyTorch
-* Matplotlib
-
-The current experiment uses the random seed
-
-```python
 1234
 ```
 
-The principal simulation and training parameters are centralized in the `CONFIG` dictionary.
+The dataset-generation procedure uses independent spawned random seeds for individual trajectories.
 
-The physics simulation uses NumPy/SciPy, while the neural-operator model and training pipeline use PyTorch.
+The test dataset uses a separate seed offset from the training seed.
+
+The main simulation parameters are centralized in the `CONFIG` dictionary.
+
+Important parameters include:
+
+```text
+EJ_GHz
+EC_GHz
+ng0
+n_cut
+n_levels
+dt_env_ns
+dt_internal_ns
+total_time_ns
+operator_dt_ns
+batch_size
+learning_rate
+epochs
+```
+
+The simulation automatically selects the available compute device according to the configured device-selection logic.
 
 ---
 
-# 21. Future Work
+## Numerical Configuration
 
-The FNO currently provides the first neural-operator baseline for the physics-generated transmon dataset.
+The main physical and numerical scales currently used by the simulator include:
 
-The next stage is to implement additional neural-operator architectures while keeping the underlying learning problem fixed.
+| Parameter | Value |
+|---|---:|
+| $E_J$ | $20.0$ GHz |
+| $E_C$ | $0.30$ GHz |
+| $n_{\mathrm{cut}}$ | $50$ |
+| Retained levels | $10$ |
+| Operator time step | $2.0$ ns |
+| Internal time step | $0.05$ ns |
+| Total simulation time | $200$ ns |
+| Operator-grid points | $101$ |
+| FNO modes | $16$ |
+| FNO width | $32$ |
+| Batch size | $8$ |
+| Learning rate | $10^{-3}$ |
 
-The planned benchmark is
+The active train/test sample counts and epoch count are controlled by `CONFIG`.
+
+---
+
+## Research Objective
+
+The objective is to determine how accurately neural operators can learn the input-output map of a physics-based, noisy superconducting-qubit simulator.
+
+The learned operator is
+
+$$
+\mathcal{G}_\theta
+:
+\left[
+u_f(t),
+u_I(t),
+u_Q(t),
+u_c(t)
+\right]
+\mapsto
+\left[
+P_0(t),
+P_1(t),
+\ldots,
+P_9(t)
+\right].
+$$
+
+The important feature of the problem is that the training data are generated by an explicit physical simulator rather than by an arbitrary synthetic regression function.
+
+The neural operator therefore approximates a dynamical map generated by:
+
+- a nonlinear superconducting-qubit Hamiltonian,
+- finite-dimensional energy-level structure,
+- microwave control,
+- stochastic environmental perturbations,
+- relaxation,
+- dephasing,
+- and numerical open-system time evolution.
+
+---
+
+## Future Neural-Operator Benchmark
+
+The current FNO provides the first neural-operator baseline.
+
+The intended benchmark is:
 
 $$
 \boxed{
 \mathrm{FNO}
-\quad\mathrm{vs.}\quad
+\quad\text{vs.}\quad
 \mathrm{GNO}
-\quad\mathrm{vs.}\quad
+\quad\text{vs.}\quad
 \mathrm{CATO}
 }
 $$
 
-using the same:
+All models will ultimately be evaluated on the same physics-generated dataset and under the same train/test protocol.
 
-* Physics-generated dataset.
-* Four-channel input representation.
-* Ten-channel population output.
-* Temporal discretization.
-* Training/test split.
-* Batch size.
-* Optimizer.
-* Learning rate.
-* MSE objective.
-* Relative $L^2$ metric.
-* Relative temporal $H^1$ metric.
+The comparison will focus on:
 
-This will provide a controlled comparison of different neural-operator architectures for learning the same noisy open-quantum dynamical system.
+- predictive accuracy,
+- relative $L^2$ error,
+- temporal $H^1$-type error,
+- training cost,
+- inference cost,
+- parameter count,
+- and robustness of the learned operator.
+
+GNO and CATO are future components of the benchmark and are not part of the current implemented pipeline.
 
 ---
 
-# 22. Research Objective
+## Core Mathematical Problem
 
-The central research problem is to learn the operator
+The complete problem can be summarized as follows.
+
+A stochastic four-channel Hamiltonian coefficient function is generated:
+
+$$
+u(t)
+=
+\begin{bmatrix}
+u_f(t)\\
+u_I(t)\\
+u_Q(t)\\
+u_c(t)
+\end{bmatrix}.
+$$
+
+It determines the time-dependent Hamiltonian
+
+$$
+H(t)
+=
+H_0
++
+u_f(t)H_f
++
+u_I(t)H_I
++
+u_Q(t)H_Q
++
+u_c(t)H_c.
+$$
+
+The density matrix evolves according to
+
+$$
+\frac{d\rho}{dt}
+=
+-i[H(t),\rho]
++
+\sum_k
+\mathcal{D}[L_k]\rho.
+$$
+
+The simulator produces the population trajectory
+
+$$
+\mathbf{P}(t)
+=
+\begin{bmatrix}
+P_0(t)\\
+P_1(t)\\
+\vdots\\
+P_9(t)
+\end{bmatrix}.
+$$
+
+The machine-learning task is therefore
+
+$$
+\boxed{
+\mathcal{G}:u(t)\longmapsto\mathbf{P}(t)
+}
+$$
+
+with discretized representation
 
 $$
 \boxed{
 \mathcal{G}:
 \mathbb{R}^{4\times101}
-\rightarrow
-\mathbb{R}^{10\times101}
+\longrightarrow
+\mathbb{R}^{10\times101}.
 }
 $$
 
-that maps time-dependent effective Hamiltonian coefficients to ten-level transmon population dynamics.
+The current implementation learns this operator using a Fourier Neural Operator.
 
-The reference operator is generated by numerical solution of an open quantum system containing:
+---
 
-* Full cosine transmon physics.
-* Finite anharmonicity.
-* Higher-level dynamics and leakage.
-* I/Q microwave control.
-* Frequency noise.
-* Charge noise.
-* Microwave amplitude noise.
-* Microwave phase noise.
-* Slow frequency drift.
-* TLS telegraph switching.
-* Relaxation.
-* Dephasing.
+## Project Status
 
-The neural operator therefore learns a functional mapping between physically meaningful time-dependent Hamiltonian inputs and the resulting quantum population trajectories.
+The project currently represents the following stage:
 
-The current stage establishes the complete physics-to-FNO pipeline. The subsequent stages will extend this framework to additional neural operators and a controlled architectural comparison.
+```text
+Physics Simulator
+        |
+        v
+Physics-Generated Dataset
+        |
+        v
+FNO Baseline
+        |
+        v
+Quantitative Evaluation
+        |
+        v
+Future GNO / CATO Benchmark
+```
+
+The present code therefore establishes the physics-based operator-learning benchmark infrastructure and its first neural-operator model.
+
