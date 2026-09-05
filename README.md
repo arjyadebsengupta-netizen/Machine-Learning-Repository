@@ -28,10 +28,9 @@ Physics Simulations                                Robotics
                      
                                
                     
-
 ### Repository Structure
 
-```text
+
 .
 Theory                                                Applications
 ├── 01_Classical_ML/                                   |──Physics Simulation Applications──|──Introduction.md
