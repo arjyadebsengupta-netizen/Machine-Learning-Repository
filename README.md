@@ -11,6 +11,7 @@ The best order for theory reading is:
   <li>02_Deep_Learning</li>
   <li>03_Neural Operators</li>
   <li>Transformer Variants</li>
+  <li>Reinforcement Learning</li>
 </ol>
 These files so far describe the ML codes and algorithms involved. The Physics Simulation Applications folder will explore more on how to combine the models to establish a digital twin. Also, in parallel , we will see how to employ Reinforcement Learning in Robotics Applications. 
 
