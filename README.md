@@ -12,7 +12,7 @@ The best order for theory reading is:
   <li>03_Neural Operators</li>
   <li>Transformer Variants</li>
 </ol>
-These files so far describe the code. The Physics Simulation Applications folder will explore more on how to combine the models to establish a digital twin. 
+These files so far describe the ML codes and algorithms involved. The Physics Simulation Applications folder will explore more on how to combine the models to establish a digital twin. Also, in parallel , we will see how to employ Reinforcement Learning in Robotics Applications. 
 
 ## Repository Structure
 
@@ -61,7 +61,12 @@ Transformer Variants/
 ├── Transformer_Variants_Part_2.pdf
 ├── Transformer_Variants_Part_3.pdf
 ├── Transformer_Variants_Part_4.pdf
-└── Transformer_Variants_Part_5.pdf         
+└── Transformer_Variants_Part_5.pdf
+Reinforcement Learning/
+├──Preliminary Lie Algebra needed for Robotics(Lie_Algebra.pdf)
+├──
+├──
+        
 ```
 
 ---
@@ -229,6 +234,11 @@ five PDFs.
 
 > **The PDFs contain the full technical treatment. This README serves as
 > the roadmap for the collection.**
+
+### Reinforcement-Learning:
+We will be exploring applications of RL in robotics. All necessary materials will be provided in suitably designated folders. 
+
+
 
 ## Environment & Requirements
 
