@@ -3,7 +3,7 @@
 ## Knowledge Flow of the Repository
 
 ```text
-Mathematical Foundation + Dataset_types_in_Machine_learning.pdf + EDA_techniques.pdf
+Mathematical Foundation + Dataset_types_in_Machine_learning.pdf + EDA_techniques.pdf + Overview of Machine Learning.pdf
         │
         ▼
 Classical Machine Learning
