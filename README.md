@@ -253,8 +253,8 @@ five PDFs.
 
 ### Physics Simulations:
 Each folder denotes a separate simulation. For ease of understanding, with each folder, the material has been divided into 
--**Theory**- The necessary physics theory and models used, as well as train-test setup is listed here. 
--**Code**- This includes the python code.
+**Theory**- The necessary physics theory and models used, as well as train-test setup is listed here. 
+**Code**- This includes the python code.
 
 
 ### Reinforcement-Learning:
