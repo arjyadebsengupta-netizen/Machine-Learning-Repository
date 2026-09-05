@@ -1,19 +1,33 @@
 # Machine Learning, Deep Learning, and Neural Operators
 
-A comprehensive repository covering classical machine learning algorithms, deep learning architectures, and neural operators.
-The best order for theory reading is:
+## Knowledge Flow of the Repository
 
-<ol type="I">
-  <li>Overview of Machine Learning</li>
-  <li>Dataset_types_in_Machine_learning</li>
-  <li>EDA_techniques</li>
-  <li>01_Classical_ML</li>
-  <li>02_Deep_Learning</li>
-  <li>03_Neural Operators</li>
-  <li>Transformer Variants</li>
-  <li>Reinforcement Learning</li>
-</ol>
-These files so far describe the ML codes and algorithms involved. The Physics Simulation Applications folder will explore more on how to combine the models to establish a digital twin. Also, in parallel , we will see how to employ Reinforcement Learning in Robotics Applications. 
+```text
+Mathematical Foundation
+        │
+        ▼
+Classical Machine Learning
+        │
+        ▼
+Deep Learning
+        │
+        ├──────────────┐
+        ▼              ▼
+Neural Operators    Transformers Variants
+        │──────────────────────────────────────────┐
+        ▼                                          ▼
+Physics / Scientific Machine Learning       Reinforcement Learning
+        │                                          │
+        ▼                                          ▼
+Physics Simulations                                Robotics 
+
+                                                 
+ 
+
+                           
+                     
+                               
+                    
 
 ## Repository Structure
 
