@@ -11,16 +11,18 @@ Classical Machine Learning
         ▼
 Deep Learning
         │
-        ├──────────────┐
-        ▼              ▼
-Neural Operators    Transformers Variants
-        │──────────────────────────────────────────┐
-        ▼                                          ▼
-Physics / Scientific Machine Learning       Reinforcement Learning
-        │                                          │
-        ▼                                          ▼
-Physics Simulations                                Robotics 
-
+        ▼
+Neural Operators ──────────────▶ Transformers Variants
+                                      │
+                                      ▼
+                              Basics of JAX framework.md
+                                      │
+                     ┌────────────────┴────────────────┐
+                     ▼                                 ▼
+      Physics / Scientific Machine Learning    Reinforcement Learning
+                     │                                 │
+                     ▼                                 ▼
+            Physics Simulations                    Robotics
                                                  
  
 
